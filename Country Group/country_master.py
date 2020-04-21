@@ -117,9 +117,14 @@ def create_country_polygons():
 
                 # function used to add a polygon to the dictionary
                 def add_region(region):
-                    country_poly[country_name][0].append(region)
-                    # add the area of the country which lies inside of the frame (in km^2)
-                    country_poly[country_name][1] += abs(geod.geometry_area_perimeter(region)[0] / 1E6)
+                    try:
+                        country_poly[country_name][0].append(region)
+                        # add the area of the country which lies inside of the frame (in km^2)
+                        country_poly[country_name][1] += abs(geod.geometry_area_perimeter(region)[0] / 1E6)
+                    except Exception:
+                        pass
+
+
 
                 if isinstance(inside_frame, geometry.Polygon):
                     add_region(inside_frame)
