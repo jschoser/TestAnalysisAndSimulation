@@ -87,9 +87,8 @@ poll_off_filename = poll_file + ".{}.OFF.nc4".format("JUL" if summer else "JAN")
 em_filename = "AvEmFluxes.nc4"  # NetCDF file containing aircraft emissions
 em_multiplier = 10E5  # factor to increase values of emission data and avoid rounding errors due to machine precision
 
-colormap = "coolwarm"  # colour map
+colormap = "Greys"  # colour map
 removed_colour = (0, 0, 0, 1)  # colour for removed countries
-
 
 # create a dictionary containing the polygons for all countries listed in "interesting". This function returns an
 # ordered dictionary with the format "country_name: [[list of polygons that it is made up of], total area]"
@@ -124,14 +123,13 @@ def create_country_polygons():
 
                 # function used to add a polygon to the dictionary
                 def add_region(region):
+                    print(country_name)
+                    country_poly[country_name][0].append(region)
+                    # add the area of the country which lies inside of the frame (in km^2)
                     try:
-                        country_poly[country_name][0].append(region)
-                        # add the area of the country which lies inside of the frame (in km^2)
                         country_poly[country_name][1] += abs(geod.geometry_area_perimeter(region)[0] / 1E6)
                     except Exception:
-                        pass
-
-
+                        print(country_name, region, type(region))
 
                 if isinstance(inside_frame, geometry.Polygon) and not inside_frame.is_empty:
                     add_region(inside_frame)
