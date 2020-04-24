@@ -47,14 +47,15 @@ em_chemical = "BC"
 em_mult = 1
 poll_mult = 1
 
-# the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
+# the altitude levels over which emissions will be considered (available from 1 to 32). Check Altitude_levels.txt for
 # conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude
-emission_levels = slice(0, 8)
+emission_levels = slice(0, 32)
 
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
 print("Creating country polygons...")
 countries = ct.create_country_polygons()
+areas = np.array(list(countries.values()))[:, 1]
 
 print("Retrieving raw pollution and emission data...")
 raw_data, _ = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical,
@@ -107,7 +108,7 @@ plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values))
 
 plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method))
 plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$")
-plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"
+plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"  # not quite sure about the pollution units
             if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical))
 plt.yscale('linear') #With this line you can change the type of graph
 print("Finished")
