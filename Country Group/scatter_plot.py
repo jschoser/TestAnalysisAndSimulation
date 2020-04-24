@@ -52,6 +52,6 @@ plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_lev
 plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$")
 plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"
             if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical))
-
+plt.yscale('log') #With this line you can change the type of graph
 print("Finished")
 plt.show()
