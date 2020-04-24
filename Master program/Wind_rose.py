@@ -2,8 +2,12 @@ from windrose import WindroseAxes
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+from vector_mapping import *
 
 dataset = netcdf_dataset('../Data/wind/' + month + '/MERRA2.2005' + month + day + '.A3dyn.05x0625.EU.nc4')
+
+X, Y = unpack_posdata()
+U, V = unpack_veldata(0)
 
 # Create wind speed and direction variables
 
