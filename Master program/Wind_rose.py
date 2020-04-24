@@ -4,6 +4,10 @@ import matplotlib.cm as cm
 import numpy as np
 #from vector_mapping import *
 import xarray as xr
+import math
+
+
+arr1 = np.array([1, 2, 3])
 
 # single file
 dataDIR = '../data/PM25.1h.JAN.ON.nc4'
@@ -29,10 +33,16 @@ ax.set_legend()
 
 plt.show()
 
+#winddir = 180 + (180/pi) * atan2(U,V)
+
 #da=DS.PM25.variables#.sel(lat=32, lon=48.12, time='2005-01-22T23:30:00')
 #da=DS.PM25.sel(lat=32, lon=48.12).sel(lev=1, method='nearest').sel(time='2005-1-22')
-da=DS.PM25.sel(time='2005-01-22T23:30:00', lat=32.0, lon=48.12, method='nearest')
+da=DS.PM25.sel(lat=32.0, lon=48.12, method='nearest')
 print('hey')
-print(DS.lon.values)
+print(DS.time.values)
 print('hey')
 #print(DS.PM25.values)
+da = da.sel(time=slice('2005-01-01T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
+for i in range(24):
+    arr1.append((da[3*i]+da[3*i+1]+da[3*i+2])/3)
+#print(da)
