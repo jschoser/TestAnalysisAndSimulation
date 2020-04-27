@@ -2,6 +2,8 @@ import country_tools as ct
 import numpy as np
 from matplotlib import pyplot as plt
 from collections import OrderedDict
+import pandas
+import seaborn as sb
 
 """
 Scatter plot of all countries in the region, with emission and pollution axes
@@ -120,4 +122,20 @@ plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"  # not
 plt.yscale('log') #With this line you can change the type of graph
 plt.xscale('log') # Double Logaritmic is the clearest
 print("Finished")
+plt.show()
+
+# Calculate and plot the correlation between datasets
+dataset_cr = pandas.DataFrame({'emissions': em_values, 'pollution': poll_values}, columns=['emissions', 'pollution'])
+corr_type = 'pearson' # for a different correlation indicator, try method='spearman' or method='kendall'
+corr_data = dataset_cr.corr(method=corr_type)
+
+sb.heatmap(corr_data,
+            xticklabels=corr_data.columns,
+            yticklabels=corr_data.columns,
+            cmap='RdBu_r',
+            annot=True,
+            linewidth=0.5) # this plots the correlation
+                           # a coefficient close to 1 means that there is a positive correlation between the variables
+                           # the diagonal is equal to one as this is the correlation the varriables to themselves
+
 plt.show()
