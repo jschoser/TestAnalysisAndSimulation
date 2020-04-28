@@ -136,6 +136,6 @@ sb.heatmap(corr_data,
             annot=True,
             linewidth=0.5) # this plots the correlation
                            # a coefficient close to 1 means that there is a positive correlation between the variables
-                           # the diagonal is equal to one as this is the correlation the varriables to themselves
+                           # the diagonal is equal to one as this is the correlation the variables to themselves
 
 plt.show()
