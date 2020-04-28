@@ -24,7 +24,7 @@ Iceland = ["Icelandics", "Iceland", "Faroes"]
 # Finland = ["Finland","Finland"]
 Germany = ["Germany","Germany"]
 France = ["France","France"]
-Switzerland = ["Switserland","Switzerland"]
+Switzerland = ["Switzerland","Switzerland"]
 Italy = ["Italy", "Italy"]
 Poland = ["Poland","Poland"]
 Belgium = ["Belgium", "Belgium"]
@@ -34,8 +34,8 @@ Morocco = ["Morocco", "Morocco"]
 Algeria = ["Algeria","Algeria"]
 Libya = ["Libya", "Libya"]
 Tunisia = ["Tunisia", "Tunisia"]
-Egypt = ["Egypt","Egypt"]
-All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, Central_Europe, Turkey,Baltics ,Eastern_Europe ,Iceland ,Germany ,France ,Switzerland ,Italy ,Poland ,Belgium ,Netherlands ,Luxembourg ,Morocco ,Algeria , Tunisia , Egypt ]
+# Egypt = ["Egypt","Egypt"]
+All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, Central_Europe, Turkey,Baltics ,Eastern_Europe ,Iceland ,Germany ,France ,Switzerland ,Italy ,Poland ,Belgium ,Netherlands ,Luxembourg ,Morocco ,Algeria , Tunisia ]
 
 summer = True   # used to select between pollution data for January and July
 
@@ -51,7 +51,7 @@ poll_mult = 1
 
 # the altitude levels over which emissions will be considered (available from 1 to 32). Check Altitude_levels.txt for
 # conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude
-emission_levels = slice(0, 32)
+emission_levels = slice(0, 8)
 
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
@@ -113,9 +113,9 @@ plt.axis([min(em_values), max(em_values), min(poll_values), max(poll_values)])
 plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values)))
 
 for country in em_data:
-    plt.annotate(country, [em_data[country], poll_data[country]])
+    plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(15) #,[em_data[country], poll_data[country]])
 
-plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method))
+# plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method))
 plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$")
 plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"  # not quite sure about the pollution units
             if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical))
