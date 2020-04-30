@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import seaborn as sb
 
-# this is just downloading a random data set I downloaded, has to be replaced by the data we want
+# this is just downloading a random data set I downloaded, has to be replaced by our data
 from sklearn.datasets import load_breast_cancer
 data = load_breast_cancer()
 
