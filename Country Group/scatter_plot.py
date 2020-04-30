@@ -24,7 +24,7 @@ Iceland = ["Icelandics", "Iceland", "Faroes"]
 # Finland = ["Finland","Finland"]
 Germany = ["Germany","Germany"]
 France = ["France","France"]
-Switzerland = ["Switserland","Switzerland"]
+Switzerland = ["Switzerland","Switzerland"]
 Italy = ["Italy", "Italy"]
 Poland = ["Poland","Poland"]
 Belgium = ["Belgium", "Belgium"]
@@ -34,24 +34,24 @@ Morocco = ["Morocco", "Morocco"]
 Algeria = ["Algeria","Algeria"]
 Libya = ["Libya", "Libya"]
 Tunisia = ["Tunisia", "Tunisia"]
-Egypt = ["Egypt","Egypt"]
-All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, Central_Europe, Turkey,Baltics ,Eastern_Europe ,Iceland ,Germany ,France ,Switzerland ,Italy ,Poland ,Belgium ,Netherlands ,Luxembourg ,Morocco ,Algeria , Tunisia , Egypt ]
+# Egypt = ["Egypt","Egypt"]
+All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, Central_Europe, Turkey,Baltics ,Eastern_Europe ,Iceland ,Germany ,France ,Switzerland ,Italy ,Poland ,Belgium ,Netherlands ,Luxembourg ,Morocco ,Algeria , Tunisia]
 
 summer = True   # used to select between pollution data for January and July
 
-poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "O3.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "AerMassBC"
-em_chemical = "BC"
+poll_chemical = "SpeciesConc_O3"
+em_chemical = "NO2"
 
 em_mult = 1
 poll_mult = 1
 
 # the altitude levels over which emissions will be considered (available from 1 to 32). Check Altitude_levels.txt for
 # conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude
-emission_levels = slice(0, 32)
+emission_levels = slice(0, 8)
 
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
