@@ -87,10 +87,8 @@ for group in All_groups:
     t_p.append(final_p)
     ed.append(tuple(t_e))
     pd.append(tuple(t_p))
-ed = OrderedDict(ed)
-pd = OrderedDict(pd)
-em_data = ed
-poll_data = pd
+em_data   = OrderedDict(ed)
+poll_data = OrderedDict(pd)
 
 print("Plotting...")
 em_values = np.array(list(em_data.values()))
