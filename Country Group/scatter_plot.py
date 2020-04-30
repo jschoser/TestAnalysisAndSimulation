@@ -39,12 +39,12 @@ All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, C
 
 summer = True   # used to select between pollution data for January and July
 
-poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "O3.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "AerMassBC"
-em_chemical = "BC"
+poll_chemical = "SpeciesConc_O3"
+em_chemical = "NO2"
 
 em_mult = 1
 poll_mult = 1
@@ -66,76 +66,69 @@ print("Processing the data...")
 em_data, _ = ct.process_data(countries, raw_data, method=method, mode=ct.PLOT_EMISSIONS, multiplier=em_mult)
 poll_data, _ = ct.process_data(countries, raw_data, method=method, mode=ct.PLOT_POLLUTION, multiplier=poll_mult)
 
-ed = []
+# The countries are grouped at the top of this code. Here we  loop through the groups and we then extract the areas,
+# summarize them, multiply them with the emissions, and then# they are divided by the total area of a group (to
+# normalize)
+print("Grouping countries...")
+ed,pd = [],[]
 for group in All_groups:
-    total = []
+    total_e, total_p, t_e, t_p, area = ([] for i in range(5))
     c_in_group = group[1::]
-    t = []
-    area = []
     for country in c_in_group:
         c_area = countries[country][1]
-        total.append(em_data[country]*c_area)
+        total_e.append(em_data[country]*c_area)
+        total_p.append(poll_data[country] * c_area)
         area.append(c_area)
-    t.append(group[0])
-    final = (sum(total)/(sum(area)))
-    t.append(final)
-    t = tuple(t)
-    ed.append(t)
-ed = OrderedDict(ed)
-
-em_data = ed
-
-pd = []
-for group in All_groups:
-    total = []
-    c_in_group = group[1::]
-    t = []
-    area = []
-    for country in c_in_group:
-        c_area = countries[country][1]
-        total.append(poll_data[country] * c_area)
-        area.append(c_area)
-    t.append(group[0])
-    final = (sum(total) / (sum(area)))
-    t.append(final)
-    t = tuple(t)
-    pd.append(t)
-pd = OrderedDict(pd)
-
-poll_data = pd
+    t_e.append(group[0])
+    t_p.append(group[0])
+    final_e = sum(total_e)/sum(area)
+    final_p = sum(total_p)/sum(area)
+    t_e.append(final_e)
+    t_p.append(final_p)
+    ed.append(tuple(t_e))
+    pd.append(tuple(t_p))
+em_data = OrderedDict(ed)
+poll_data = OrderedDict(pd)
 
 print("Plotting...")
+# Set fontsize with this parameter
+# fontsize = 15
+
 em_values = np.array(list(em_data.values()))
 poll_values = np.array(list(poll_data.values()))
-
-plt.axis([min(em_values), max(em_values), min(poll_values), max(poll_values)])
+# Use the line below for scaling the map to fit everything in
+plt.axis([min(em_values)*0.9, max(em_values)*11, min(poll_values)*0.9, max(poll_values)/0.8])
 
 plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values)))
 
-for country in em_data:
-    plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(15) #,[em_data[country], poll_data[country]])
+# This list is where you can put the name of the countries
+Scatter_country_List = ["Icelandics","Belgium","Netherlands","Luxembourg","Algeria","Morocco"]
+for country in Scatter_country_List:
+# for country in em_data:
+    plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(12) #,[em_data[country], poll_data[country]])
 
-# plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method))
-plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$")
-plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"  # not quite sure about the pollution units
-            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical))
-plt.yscale('log') #With this line you can change the type of graph
+# plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method)).set_fontsize(5)
+plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$").set_fontsize(12)
+plt.ylabel(("Average Ground-Level {} from Aviation " + ("$[\mu g/m/km^2]$"  # not quite sure about the pollution units
+            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$")).format(poll_chemical)).set_fontsize(8.5)
+plt.yscale('log') # With this line you can change the type of graph
 plt.xscale('log') # Double Logaritmic is the clearest
-print("Finished")
+# print("Finished")
 plt.show()
 
-# Calculate and plot the correlation between datasets
-dataset_cr = pandas.DataFrame({'emissions': em_values, 'pollution': poll_values}, columns=['emissions', 'pollution'])
-corr_type = 'pearson' # for a different correlation indicator, try method='spearman' or method='kendall'
-corr_data = dataset_cr.corr(method=corr_type)
-
-sb.heatmap(corr_data,
-            xticklabels=corr_data.columns,
-            yticklabels=corr_data.columns,
-            cmap='RdBu_r',
-            annot=True,
-            linewidth=0.5) # this plots the correlation
-                           # a coefficient close to 1 means that there is a positive correlation between the variables
-                           # the diagonal is equal to one as this is the correlation the variables to themselves
-
-plt.show()
+# print("Calculating Correlation")
+# # Calculate and plot the correlation between datasets
+# dataset_cr = pandas.DataFrame({'emissions': em_values, 'pollution': poll_values}, columns=['emissions', 'pollution'])
+# corr_type = 'pearson' # for a different correlation indicator, try method='spearman' or method='kendall'
+# corr_data = dataset_cr.corr(method=corr_type)
+#
+# sb.heatmap(corr_data,
+#             xticklabels=corr_data.columns,
+#             yticklabels=corr_data.columns,
+#             cmap='RdBu_r',
+#             annot=True,
+#             linewidth=0.5) # this plots the correlation
+#                            # a coefficient close to 1 means that there is a positive correlation between the variables
+#                            # the diagonal is equal to one as this is the correlation the variables to themselves
+# print("Finished")
+# plt.show()
