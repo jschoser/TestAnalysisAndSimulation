@@ -24,7 +24,7 @@ V=DS2.V.sel(lat=32.0, lon=48.12,lev=1, method='nearest')
 
 print(U)
 
-#winddir = 180 + (180/pi) * atan2(V/U)
+winddir = 180 + (180/pi) * np.arctan2(U,V)
 
 
 da=DS.PM25.sel(lat=32.0, lon=48.12, method='nearest')
