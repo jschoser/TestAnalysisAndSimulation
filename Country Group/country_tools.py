@@ -209,7 +209,7 @@ def process_data(country_polygons, raw_data, method=METHOD_AVG, mode=PLOT_RATIO,
                 removed_countries.append(country)
                 del processed_data[country]
     elif mode == PLOT_EMISSIONS or mode == PLOT_POLLUTION:
-        for country in raw_data:
+        for country in raw_data:  # TODO: Should the averaging for pollution be to divide by the number of cells instead of area?
             if outliers is None or not any([outlier in country for outlier in outliers]):
                 # divide pollution or emissions (depending on the mode) by the area of the corresponding country
                 processed_data[country] = processed_data[country][0 if mode == PLOT_EMISSIONS else 1] * multiplier / \
@@ -323,8 +323,8 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
     chemical_decription += ("Emission chemical: " + em_chemical + " | ")\
         if mode == PLOT_RATIO or mode == PLOT_EMISSIONS else ""
     return chemical_decription + "Time frame for pollution: " + ("July" if summer else "January") +\
-           " 2005 | Altitude levels for emission: " + str(emission_levels.start) + " to " + \
-           str(emission_levels.stop) + " | Averaging method: " + method
+           " 2005 | " + (("Altitude levels for emission: " + str(emission_levels.start) + " to " +
+           str(emission_levels.stop) + " | ") if mode != PLOT_POLLUTION else "") + "Averaging method: " + method
 
 
 # show map with colour coding for the pollution and/or emission data

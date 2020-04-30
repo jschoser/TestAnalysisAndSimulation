@@ -35,11 +35,11 @@ shown in a map
 
 summer = True   # used to select between pollution data for January and July
 
-poll_coll = "O3.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "Aerosol.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "SpeciesConc_O3"
+poll_chemical = "PM25"
 em_chemical = "FUELBURN"
 
 # the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
@@ -48,7 +48,7 @@ emission_levels = slice(0, 8)
 
 # these countries will be ignored in the calculation. That is useful if some countries have such high or low values that
 # they make it impossible to see any differences between the other countries
-outliers = ["Iraq", "Israel", "Latvia"]
+outliers = []  # ["Iraq", "Israel", "Latvia"]
 
 mode = ct.PLOT_RATIO  # the statistic which is plotted (emissions, pollution or ratio between them)
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
