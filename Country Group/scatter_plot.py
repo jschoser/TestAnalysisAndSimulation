@@ -91,9 +91,12 @@ em_data = OrderedDict(ed)
 poll_data = OrderedDict(pd)
 
 print("Plotting...")
+# Set fontsize with this parameter
+# fontsize = 15
+
 em_values = np.array(list(em_data.values()))
 poll_values = np.array(list(poll_data.values()))
-
+# Use the line below for scaling the map to fit everything in
 plt.axis([min(em_values)*0.9, max(em_values)*2.5, min(poll_values)*0.9, max(poll_values)/0.9])
 
 plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values)))
@@ -104,15 +107,15 @@ for country in Scatter_country_List:
 # for country in em_data:
     plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(15) #,[em_data[country], poll_data[country]])
 
-# plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method))
-plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$")
+plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method)).set_fontsize(14)
+plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$").set_fontsize(15)
 plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"  # not quite sure about the pollution units
-            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical))
+            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical)).set_fontsize(15)
 plt.yscale('log') # With this line you can change the type of graph
 plt.xscale('log') # Double Logaritmic is the clearest
 # print("Finished")
 plt.show()
-#
+
 # print("Calculating Correlation")
 # # Calculate and plot the correlation between datasets
 # dataset_cr = pandas.DataFrame({'emissions': em_values, 'pollution': poll_values}, columns=['emissions', 'pollution'])
