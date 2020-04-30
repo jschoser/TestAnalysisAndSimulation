@@ -331,9 +331,12 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
 def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
              add_title="", add_info="", show_removed=False, mapping=lin_mapping, colormap="coolwarm",
              removed_color=(0, 0, 0, 1)):
-    ax = plt.gca()  # get the axes of the current figure
-    ax.set_title(mode + add_title + "\n\n" +
+
+    # title for the entire plot
+    plt.suptitle(mode + add_title + "\n\n" +
                  generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode))
+
+    ax = plt.axes([0.05, 0.05, 0.8, 0.85])  # subplot for the map. [left, bottom, width, height]
 
     countries_with_poly = set(country_polygons.keys())
     countries_with_data = set(processed_data.keys())
@@ -346,6 +349,7 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
     # only display the region for which we have data
     ax.set_xlim([-30, 50])
     ax.set_ylim([30, 70])
+    # ax.set_axis_off()  # turns of coordinate axes
 
     # find maximum and minimum value to scale the colour coding
     min_val = min(processed_data.values())
@@ -368,7 +372,8 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
             ax.plot(*region.exterior.xy, alpha=0)  # plot the borders of the polygon
             ax.add_patch(PolygonPatch(region, facecolor=removed_color))  # fill the polygon with colour
 
-    # TODO: Add colour bar
-    # gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val)
-    # gradient = np.vstack((gradient, gradient))
-    # ax.imshow(gradient, aspect='auto', cmap=plt.get_cmap(colormap))
+    # create the colour legend
+    legend_ax = plt.axes([0.9, 0.1, 0.05, 0.75])
+    gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val).reshape(256, 1)[::-1]
+    legend_ax.imshow(gradient, aspect='auto', cmap=plt.get_cmap(colormap), extent=[0, 1, min_val, max_val])
+    legend_ax.xaxis.set_visible(False)
