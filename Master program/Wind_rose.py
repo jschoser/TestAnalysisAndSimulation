@@ -5,9 +5,10 @@ import numpy as np
 #from vector_mapping import *
 import xarray as xr
 import math
+import array
 
 
-arr1 = np.array([1, 2, 3])
+arr1 = np.array([])
 
 # single file
 dataDIR = '../data/PM25.1h.JAN.ON.nc4'
@@ -23,15 +24,7 @@ DS2 = xr.open_dataset(dataDIR2)
 
 # Create wind speed and direction variables
 
-ws = np.random.random(200) * 6
-wd = np.random.random(200) * 360
 
-# Make wind rose plot
-ax = WindroseAxes.from_ax()
-ax.bar(wd, ws, nsector=8, normed=True, opening=0.8, edgecolor='white')
-ax.set_legend()
-
-plt.show()
 
 #winddir = 180 + (180/pi) * atan2(U,V)
 
@@ -44,5 +37,21 @@ print('hey')
 #print(DS.PM25.values)
 da = da.sel(time=slice('2005-01-01T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
 for i in range(24):
-    arr1.append((da[3*i]+da[3*i+1]+da[3*i+2])/3)
-#print(da)
+    a=(da[3*i]+da[3*i+1]+da[3*i+2])/3
+    arr2=np.array([a])
+    arr1=np.append(arr1,arr2)
+print(arr1)
+
+
+ws = arr1
+wd = np.random.random(24) * 360
+
+# Make wind rose plot
+ax = WindroseAxes.from_ax()
+ax.bar(wd, ws, nsector=8, normed=True, opening=0.8, edgecolor='white')
+ax.set_legend()
+
+plt.show()
+
+print(ws)
+print(wd)
