@@ -87,18 +87,21 @@ for group in All_groups:
     t_p.append(final_p)
     ed.append(tuple(t_e))
     pd.append(tuple(t_p))
-em_data   = OrderedDict(ed)
+em_data = OrderedDict(ed)
 poll_data = OrderedDict(pd)
 
 print("Plotting...")
 em_values = np.array(list(em_data.values()))
 poll_values = np.array(list(poll_data.values()))
 
-plt.axis([min(em_values), max(em_values), min(poll_values), max(poll_values)])
+plt.axis([min(em_values)*0.9, max(em_values)*2.5, min(poll_values)*0.9, max(poll_values)/0.9])
 
 plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values)))
 
-for country in em_data:
+# This list is where you can put the name of the countries
+Scatter_country_List = ["Icelandics","Belgium","Netherlands","Luxembourg","Algeria","Morocco"]
+for country in Scatter_country_List:
+# for country in em_data:
     plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(15) #,[em_data[country], poll_data[country]])
 
 # plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method))
@@ -109,20 +112,20 @@ plt.yscale('log') # With this line you can change the type of graph
 plt.xscale('log') # Double Logaritmic is the clearest
 # print("Finished")
 plt.show()
-
-print("Calculating Correlation")
-# Calculate and plot the correlation between datasets
-dataset_cr = pandas.DataFrame({'emissions': em_values, 'pollution': poll_values}, columns=['emissions', 'pollution'])
-corr_type = 'pearson' # for a different correlation indicator, try method='spearman' or method='kendall'
-corr_data = dataset_cr.corr(method=corr_type)
-
-sb.heatmap(corr_data,
-            xticklabels=corr_data.columns,
-            yticklabels=corr_data.columns,
-            cmap='RdBu_r',
-            annot=True,
-            linewidth=0.5) # this plots the correlation
-                           # a coefficient close to 1 means that there is a positive correlation between the variables
-                           # the diagonal is equal to one as this is the correlation the variables to themselves
-print("Finished")
-plt.show()
+#
+# print("Calculating Correlation")
+# # Calculate and plot the correlation between datasets
+# dataset_cr = pandas.DataFrame({'emissions': em_values, 'pollution': poll_values}, columns=['emissions', 'pollution'])
+# corr_type = 'pearson' # for a different correlation indicator, try method='spearman' or method='kendall'
+# corr_data = dataset_cr.corr(method=corr_type)
+#
+# sb.heatmap(corr_data,
+#             xticklabels=corr_data.columns,
+#             yticklabels=corr_data.columns,
+#             cmap='RdBu_r',
+#             annot=True,
+#             linewidth=0.5) # this plots the correlation
+#                            # a coefficient close to 1 means that there is a positive correlation between the variables
+#                            # the diagonal is equal to one as this is the correlation the variables to themselves
+# print("Finished")
+# plt.show()

@@ -44,7 +44,7 @@ em_chemical = "NO2"
 
 # the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
 # conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude
-emission_levels = slice(0, 8)
+emission_levels = slice(0, 32)
 
 # these countries will be ignored in the calculation. That is useful if some countries have such high or low values that
 # they make it impossible to see any differences between the other countries
@@ -55,8 +55,7 @@ method = ct.METHOD_AVG  # the way that the data is combined inside one country (
 
 show_spatial_analysis_map = False  # whether a second figure with spatial autocorrelation indicators should be displayed
 
-colormap = "Blues"  # the color map used. Google "matplotlib color maps" to see the options
-
+colormap = "coolwarm"  # the color map used. Google "matplotlib color maps" to see the options
 
 print("Creating country polygons...")
 countries = ct.create_country_polygons()
