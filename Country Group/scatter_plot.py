@@ -39,12 +39,12 @@ All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, C
 
 summer = True   # used to select between pollution data for January and July
 
-poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "O3.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "AerMassBC"
-em_chemical = "BC"
+poll_chemical = "SpeciesConc_O3"
+em_chemical = "NO2"
 
 em_mult = 1
 poll_mult = 1
@@ -97,7 +97,7 @@ print("Plotting...")
 em_values = np.array(list(em_data.values()))
 poll_values = np.array(list(poll_data.values()))
 # Use the line below for scaling the map to fit everything in
-plt.axis([min(em_values)*0.9, max(em_values)*2.5, min(poll_values)*0.9, max(poll_values)/0.9])
+plt.axis([min(em_values)*0.9, max(em_values)*11, min(poll_values)*0.9, max(poll_values)/0.8])
 
 plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values)))
 
@@ -105,12 +105,12 @@ plt.scatter(em_values, poll_values, cmap='hsv', c=np.random.rand(len(em_values))
 Scatter_country_List = ["Icelandics","Belgium","Netherlands","Luxembourg","Algeria","Morocco"]
 for country in Scatter_country_List:
 # for country in em_data:
-    plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(15) #,[em_data[country], poll_data[country]])
+    plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(12) #,[em_data[country], poll_data[country]])
 
-plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method)).set_fontsize(14)
-plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$").set_fontsize(15)
-plt.ylabel(("Average Ground-Level {} from Aviation " + "$[\mu g/m/km^2]$"  # not quite sure about the pollution units
-            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$").format(poll_chemical)).set_fontsize(15)
+# plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method)).set_fontsize(5)
+plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$").set_fontsize(12)
+plt.ylabel(("Average Ground-Level {} from Aviation " + ("$[\mu g/m/km^2]$"  # not quite sure about the pollution units
+            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$")).format(poll_chemical)).set_fontsize(8.5)
 plt.yscale('log') # With this line you can change the type of graph
 plt.xscale('log') # Double Logaritmic is the clearest
 # print("Finished")
