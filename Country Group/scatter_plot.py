@@ -59,12 +59,7 @@ print("Creating country polygons...")
 countries = ct.create_country_polygons()
 
 print("Retrieving raw pollution and emission data...")
-raw_data, _ = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical,
-                                   emission_levels, summer)
-
-print("Processing the data...")
-em_data, _ = ct.process_data(countries, raw_data, method=method, mode=ct.PLOT_EMISSIONS, multiplier=em_mult)
-poll_data, _ = ct.process_data(countries, raw_data, method=method, mode=ct.PLOT_POLLUTION, multiplier=poll_mult)
+data, _ = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical, emission_levels, summer, mode=ct.RETURN_BOTH, method=method)
 
 # The countries are grouped at the top of this code. Here we  loop through the groups and we then extract the areas,
 # summarize them, multiply them with the emissions, and then# they are divided by the total area of a group (to
@@ -76,8 +71,8 @@ for group in All_groups:
     c_in_group = group[1::]
     for country in c_in_group:
         c_area = countries[country][1]
-        total_e.append(em_data[country]*c_area)
-        total_p.append(poll_data[country] * c_area)
+        total_e.append(data[country][0] * c_area)
+        total_p.append(data[country][1] * c_area)
         area.append(c_area)
     t_e.append(group[0])
     t_p.append(group[0])
@@ -108,9 +103,9 @@ for country in Scatter_country_List:
     plt.annotate(country, [em_data[country], poll_data[country]]).set_fontsize(12) #,[em_data[country], poll_data[country]])
 
 # plt.title(ct.generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method)).set_fontsize(5)
-plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/day/km^2]$").set_fontsize(12)
-plt.ylabel(("Average Ground-Level {} from Aviation " + ("$[\mu g/m/km^2]$"  # not quite sure about the pollution units
-            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)/km^2]$")).format(poll_chemical)).set_fontsize(8.5)
+plt.xlabel(em_chemical + " Emission Mass from Aviation $[kg/m^2/day]$").set_fontsize(12)
+plt.ylabel(("Average Ground-Level {} from Aviation " + ("$[\mu g/m^3]$"  # not quite sure about the pollution units
+            if poll_chemical != "SpeciesConc_O3" else "$[mol/(mol of dry air)]$")).format(poll_chemical)).set_fontsize(8.5)
 plt.yscale('log') # With this line you can change the type of graph
 plt.xscale('log') # Double Logaritmic is the clearest
 # print("Finished")

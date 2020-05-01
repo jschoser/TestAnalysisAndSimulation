@@ -50,10 +50,10 @@ emission_levels = slice(0, 32)
 # they make it impossible to see any differences between the other countries
 outliers = []  # ["Iraq", "Israel", "Latvia"]
 
-mode = ct.PLOT_RATIO  # the statistic which is plotted (emissions, pollution or ratio between them)
+mode = ct.RETURN_RATIO  # the statistic which is plotted (emissions, pollution or ratio between them)
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
-show_spatial_analysis_map = False  # whether a second figure with spatial autocorrelation indicators should be displayed
+do_spatial_analysis = False  # whether a second figure with spatial autocorrelation indicators should be displayed
 
 colormap = "coolwarm"  # the color map used. Google "matplotlib color maps" to see the options
 
@@ -61,27 +61,24 @@ print("Creating country polygons...")
 countries = ct.create_country_polygons()
 countries_with_data = countries.copy()  # the countries which can be used for analysis later on
 
-print("Retrieving raw pollution and emission data...")
-raw_data, unavailable = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical,
-                                             emission_levels, summer)
+print("Retrieving pollution and emission data...")
+data, unavailable = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
+                                         mode=mode, outliers=outliers, method=method)
 for country in unavailable:
     del countries_with_data[country]
 
-print("Processing the data...")
-processed_data, removed_countries = ct.process_data(countries, raw_data, method=method, mode=mode, outliers=outliers)
-for country in removed_countries:
-    del countries_with_data[country]
-
-print("Performing spatial analysis...")
-moran_global = ct.morans_i_global(countries_with_data, processed_data)
-geary = ct.gearys_c(countries_with_data, processed_data)
-moran_local = ct.morans_i_local(countries_with_data, processed_data)
-
 print("Plotting the data...")
-ct.plot_map(countries, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
+ct.plot_map(countries, data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
             mapping=ct.sqrt_mapping, colormap=colormap)
 
-if show_spatial_analysis_map:
+moran_global, geary, moran_local = None, None, None
+
+if do_spatial_analysis:
+    print("Performing spatial analysis...")
+    moran_global = ct.morans_i_global(countries_with_data, data)
+    geary = ct.gearys_c(countries_with_data, data)
+    moran_local = ct.morans_i_local(countries_with_data, data)
+
     print("Plotting the results of the spatial analysis...")
     plt.figure()
     ct.plot_map(countries, moran_local, mode, poll_chemical, em_chemical, summer, emission_levels, method,
@@ -94,11 +91,13 @@ pp = PrettyPrinter(indent=4)
 print("============= RESULTS ==============\n")
 
 print("These countries had no data available:", unavailable)
-print("These countries were removed:", removed_countries)
-print("Global Moran's I: ", moran_global)
-print("Geary's C: ", geary)
 print("Data:")
-pp.pprint(processed_data)
-print("Local Moran's I:")
-pp.pprint(moran_local)
+pp.pprint(data)
+
+if do_spatial_analysis:
+    print("Global Moran's I: ", moran_global)
+    print("Geary's C: ", geary)
+    print("Local Moran's I:")
+    pp.pprint(moran_local)
+
 plt.show()
