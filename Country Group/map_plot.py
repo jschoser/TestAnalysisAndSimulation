@@ -24,7 +24,6 @@ shown in a map
 """
 
 # TODO: Find neater solution for options
-# TODO: Add colour bar
 # Always keep in mind that the data for countries such as Russia and Algeria are only representative of the part of that
 # country which lies within the data region (and not of the entire country)
 # Also note that the pollution data is not influenced by areas outside of the data region (so the data does not show
@@ -35,12 +34,12 @@ shown in a map
 
 summer = True   # used to select between pollution data for January and July
 
-poll_coll = "O3.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "SpeciesConc_O3"
-em_chemical = "NO2"
+poll_chemical = "AerMassBC"
+em_chemical = "BC"
 
 # the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
 # conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude

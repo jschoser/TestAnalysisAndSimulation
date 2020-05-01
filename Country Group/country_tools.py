@@ -146,7 +146,8 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     geod = Geod('+a=6378137 +f=0.0033528106647475126')
 
     if pathlib.Path(country_cell_filename).exists() and not recalculate_country_cells:
-        country_cells = json.load(open(country_cell_filename))
+        with open(country_cell_filename) as file:
+            country_cells = json.load(file)
         print("Retrieved list of cells per country from existing file")
 
     else:  # in case there is no cache file or the user wants to recalculate it
@@ -332,7 +333,7 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
 # show map with colour coding for the pollution and/or emission data
 def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
              add_title="", add_info="", show_removed=False, mapping=lin_mapping, colormap="coolwarm",
-             removed_color=(0, 0, 0, 1)):
+             removed_color=(0, 0, 0, 1), show_cells=False):
 
     # title for the entire plot
     plt.suptitle(mode + add_title + "\n\n" +
@@ -374,8 +375,22 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
             ax.plot(*region.exterior.xy, alpha=0)  # plot the borders of the polygon
             ax.add_patch(PolygonPatch(region, facecolor=removed_color))  # fill the polygon with colour
 
+    if show_cells:
+        plot_grid()
+
     # create the colour legend
     legend_ax = plt.axes([0.9, 0.1, 0.05, 0.75])
     gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val).reshape(256, 1)[::-1]
     legend_ax.imshow(gradient, aspect='auto', cmap=plt.get_cmap(colormap), extent=[0, 1, min_val, max_val])
     legend_ax.xaxis.set_visible(False)
+
+
+def plot_grid(country_cell_filename="country_cells.json"):
+    if pathlib.Path(country_cell_filename).exists():
+        with open(country_cell_filename) as file:
+            country_cells = json.load(file)
+
+    colours = plt.get_cmap("hsv")(np.linspace(0, 1, len(country_cells)))
+    for country, c in zip(country_cells, colours):
+        colour = np.random.rand() * np.ones(len(country_cells[country]))
+        plt.scatter(np.array(country_cells[country])[:, 0], np.array(country_cells[country])[:, 1], c=[c], zorder=10)
