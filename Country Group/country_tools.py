@@ -17,9 +17,10 @@ in this directory.
 """
 
 # different modes for plotting emission and/or pollution data
-PLOT_RATIO = "Ground Pollution/Emission Ratio"
-PLOT_EMISSIONS = "Emissions"
-PLOT_POLLUTION = "Ground Pollution"
+RETURN_RATIO = "Ground Pollution/Emission Ratio"
+RETURN_EMISSIONS = "Emissions"
+RETURN_POLLUTION = "Ground Pollution"
+RETURN_BOTH = "Emissions and Ground Pollution"  # should not be used for map plots, but is useful for scatter plots
 
 # different ways of to combine the data inside one country
 METHOD_AVG = "Area average"
@@ -111,17 +112,24 @@ def find_country_name(country_polygons, lon, lat):
 
 
 # find the ground level pollution due to aircraft and aircraft emission data for each country, and return it
-# in an ordered dictionary in the form "country_name: [emission, pollution]".
+# in an ordered dictionary in the form "country_name: data". The data depends on the selected mode and can either be
+# ground pollution, emissions or the ratio of the two. Also, these values can be calculated per country using an
+# area-weighted average or by taking the median of all cells inside it
+# The output units are;
+#   - kg/m^2/day for emissions
+#   - mu_g/m^3 for pollution (except mol/(mol of dry air) for ozone)
+#   - (mu_g/m^3) / (kg/m^2/day) for the ratio
 def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
                       em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data",
-                      recalculate_country_cells=False, country_cell_filename="country_cells.json"):
+                      recalculate_country_cells=False, country_cell_filename="country_cells.json", method=METHOD_AVG,
+                      outliers=None, mode=RETURN_RATIO):
 
     em_filepath = data_dir / em_filename
     poll_on_filepath = data_dir / data_filename(poll_coll, summer, True)
     poll_off_filepath = data_dir / data_filename(poll_coll, summer, False)
 
     DS = xr.open_dataset(em_filepath)
-    da_em = getattr(DS, em_chemical)  # select only the specified emissions
+    da_em = getattr(DS, em_chemical) * 24 * 3600  # select only the specified emissions and convert to "per day"
 
     DS_on = xr.open_dataset(poll_on_filepath)
     DS_off = xr.open_dataset(poll_off_filepath)
@@ -134,8 +142,12 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     lon_axis = da_em.coords['lon'].values  # the longitude values of the data grid
     lat_axis = da_em.coords['lat'].values  # the latitude values of the data grid
 
+    # geographic parameters used to estimate area of the grid cells as a function of latitude
+    geod = Geod('+a=6378137 +f=0.0033528106647475126')
+
     if pathlib.Path(country_cell_filename).exists() and not recalculate_country_cells:
-        country_cells = json.load(open(country_cell_filename))
+        with open(country_cell_filename) as file:
+            country_cells = json.load(file)
         print("Retrieved list of cells per country from existing file")
 
     else:  # in case there is no cache file or the user wants to recalculate it
@@ -151,9 +163,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
             json.dump(country_cells, outfile, indent=4)
 
     # number of time steps in the pollution file
-    n_timesteps = 1
-    if "time" in da_poll.coords:
-        n_timesteps = len(da_poll.coords["time"].values)
+    poll_timesteps = len(da_poll.coords["time"].values)
+
+    cell_areas = []  # list for the area of each cell inside a country. Only used as temporary storage
 
     # this block fills poll_em_data in the format "country_name: [total_emissions, time_averaged_pollution]"
     for country in country_cells:
@@ -161,12 +173,49 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
             if country not in poll_em_data:
                 # if this is the first time the country is detected, set emission and pollution counters to 0
                 poll_em_data[country] = [[], []]
+                cell_areas = []
+
             # select the correct values from the simulation data and add it to the lists. Sum over all parameters
             # which are not explicitly specified (i.e. time in this case). Also select correct altitudes for both
             # emission and pollution. For pollution, divide by the number of time steps to get the time average
-            poll_em_data[country][0].append(np.sum(da_em.sel(lon=cell[0], lat=cell[1]).sel(lev=emission_levels).values))
-            poll_em_data[country][1].append(np.sum(da_poll.sel(lon=cell[0], lat=cell[1])
-                                                   .sel(lev=1, method='nearest').values) / n_timesteps)
+            cell_em = np.sum(da_em.sel(lon=cell[0], lat=cell[1], lev=emission_levels).values)
+            cell_poll = np.sum(da_poll.sel(lon=cell[0], lat=cell[1], lev=1, method='nearest').values) / poll_timesteps
+            poll_em_data[country][0].append(cell_em)
+            poll_em_data[country][1].append(cell_poll)
+
+            # calculate area of the cell to make an area-weighted average of all cells in the country
+            cell_lat_length = geod.line_length([cell[0], cell[0]], [cell[1] - 0.5/2, cell[1] + 0.5/2])
+            cell_lon_length = geod.line_length([cell[0] - 0.625/2, cell[0] + 0.625/2], [cell[1], cell[1]])
+            cell_areas.append(cell_lat_length * cell_lon_length)
+
+        if method == METHOD_AVG:
+            # perform area-weighted average between the cells
+            poll_em_data[country][0] = np.dot(poll_em_data[country][0], cell_areas) / sum(cell_areas)
+            poll_em_data[country][1] = np.dot(poll_em_data[country][1], cell_areas) / sum(cell_areas)
+
+        elif method == METHOD_MEDIAN:
+            # calculate the median of emission and pollution values
+            poll_em_data[country] = np.median(poll_em_data[country], axis=1)
+
+        else:
+            print("Invalid averaging method:", method)
+
+        if mode == RETURN_RATIO:
+            if poll_em_data[country][0] != 0 and (outliers is None or country not in outliers):
+                # divide pollution by emissions
+                poll_em_data[country] = poll_em_data[country][1] / poll_em_data[country][0]
+            else:  # remove the country from the data set if it is an outlier or if it has no emissions
+                del poll_em_data[country]
+
+        elif mode == RETURN_EMISSIONS or mode == RETURN_POLLUTION:
+            if outliers is None or country not in outliers:
+                # only keep the selected value
+                poll_em_data[country] = poll_em_data[country][0 if mode == RETURN_EMISSIONS else 1]
+            else:  # remove the country from the data set if it is an outlier
+                del poll_em_data[country]
+
+        elif mode != RETURN_BOTH:
+            print("Error: Invalid mode:", mode)
 
     # check for any missing countries in the file
     requested_keys = set(country_polygons.keys())
@@ -175,52 +224,6 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
 
     # return data, along with the names of all missing countries
     return OrderedDict(sorted(poll_em_data.items(), key=lambda t: t[0])), unavailable
-
-
-# integrate the data over the country surfaces using the chosen method, and combine emission and pollution data
-# according to the selected mode. Returns an ordered dict with "country_name: value". Also returns any countries that
-# were removed
-def process_data(country_polygons, raw_data, method=METHOD_AVG, mode=PLOT_RATIO, outliers=None, multiplier=1):
-    processed_data = raw_data.copy()  # make a copy of the data to not modify the original
-
-    # summarise list of data for each country in one single value, using the selected method
-    if method == METHOD_AVG:
-        for country in raw_data:
-            processed_data[country] = np.sum(raw_data[country], axis=1)
-    elif method == METHOD_MEDIAN:
-        for country in raw_data:
-            processed_data[country] = np.median(raw_data[country], axis=1)
-    else:
-        print("Error: Invalid averaging method:", method)
-
-    # list of all countries that were removed, either if they lead to divisions by zero or because they were labelled
-    # as outliers. This list does not contain the countries for which we do not have any data at all
-    removed_countries = []
-
-    # post-process the data according to the selected statistic to get the format "country_name: value"
-    if mode == PLOT_RATIO:
-        for country in raw_data:
-            # avoid division by zero and check that the country isn't labeled as an outlier
-            if processed_data[country][0] != 0 and (outliers is None or
-                                                    not any([outlier in country for outlier in outliers])):
-                # divide pollution by emissions
-                processed_data[country] = processed_data[country][1] * multiplier / processed_data[country][0]
-            else:  # remove the country from the data set if it is an outlier or if it has no emissions
-                removed_countries.append(country)
-                del processed_data[country]
-    elif mode == PLOT_EMISSIONS or mode == PLOT_POLLUTION:
-        for country in raw_data:  # TODO: Should the averaging for pollution be to divide by the number of cells instead of area?
-            if outliers is None or not any([outlier in country for outlier in outliers]):
-                # divide pollution or emissions (depending on the mode) by the area of the corresponding country
-                processed_data[country] = processed_data[country][0 if mode == PLOT_EMISSIONS else 1] * multiplier / \
-                                          country_polygons[country][1]
-            else:  # remove the country from the data set if it is an outlier
-                removed_countries.append(country)
-                del processed_data[country]
-    else:
-        print("Error: Invalid mode:", mode)
-
-    return OrderedDict(sorted(processed_data.items(), key=lambda t: t[0])), removed_countries
 
 
 # returns a matrix that gives the spatial correlation between countries (based on the inverse of the distance between
@@ -317,23 +320,26 @@ def log_mapping(val, min_val, max_val):
     return np.log((val - min_val) / (max_val - min_val) + 1) / np.log(2)
 
 
-def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode=PLOT_RATIO):
+def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode=RETURN_RATIO):
     chemical_decription = ("Pollution chemical: " + poll_chemical + " | ")\
-        if mode == PLOT_RATIO or mode == PLOT_POLLUTION else ""
+        if mode == RETURN_RATIO or mode == RETURN_POLLUTION else ""
     chemical_decription += ("Emission chemical: " + em_chemical + " | ")\
-        if mode == PLOT_RATIO or mode == PLOT_EMISSIONS else ""
+        if mode == RETURN_RATIO or mode == RETURN_EMISSIONS else ""
     return chemical_decription + "Time frame for pollution: " + ("July" if summer else "January") +\
            " 2005 | " + (("Altitude levels for emission: " + str(emission_levels.start) + " to " +
-           str(emission_levels.stop) + " | ") if mode != PLOT_POLLUTION else "") + "Averaging method: " + method
+           str(emission_levels.stop) + " | ") if mode != RETURN_POLLUTION else "") + "Averaging method: " + method
 
 
 # show map with colour coding for the pollution and/or emission data
 def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
              add_title="", add_info="", show_removed=False, mapping=lin_mapping, colormap="coolwarm",
-             removed_color=(0, 0, 0, 1)):
-    ax = plt.gca()  # get the axes of the current figure
-    ax.set_title(mode + add_title + "\n\n" +
+             removed_color=(0, 0, 0, 1), show_cells=False):
+
+    # title for the entire plot
+    plt.suptitle(mode + add_title + "\n\n" +
                  generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode))
+
+    ax = plt.axes([0.05, 0.05, 0.8, 0.85])  # subplot for the map. [left, bottom, width, height]
 
     countries_with_poly = set(country_polygons.keys())
     countries_with_data = set(processed_data.keys())
@@ -346,6 +352,7 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
     # only display the region for which we have data
     ax.set_xlim([-30, 50])
     ax.set_ylim([30, 70])
+    # ax.set_axis_off()  # turns of coordinate axes
 
     # find maximum and minimum value to scale the colour coding
     min_val = min(processed_data.values())
@@ -368,7 +375,22 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
             ax.plot(*region.exterior.xy, alpha=0)  # plot the borders of the polygon
             ax.add_patch(PolygonPatch(region, facecolor=removed_color))  # fill the polygon with colour
 
-    # TODO: Add colour bar
-    # gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val)
-    # gradient = np.vstack((gradient, gradient))
-    # ax.imshow(gradient, aspect='auto', cmap=plt.get_cmap(colormap))
+    if show_cells:
+        plot_grid()
+
+    # create the colour legend
+    legend_ax = plt.axes([0.9, 0.1, 0.05, 0.75])
+    gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val).reshape(256, 1)[::-1]
+    legend_ax.imshow(gradient, aspect='auto', cmap=plt.get_cmap(colormap), extent=[0, 1, min_val, max_val])
+    legend_ax.xaxis.set_visible(False)
+
+
+def plot_grid(country_cell_filename="country_cells.json"):
+    if pathlib.Path(country_cell_filename).exists():
+        with open(country_cell_filename) as file:
+            country_cells = json.load(file)
+
+    colours = plt.get_cmap("hsv")(np.linspace(0, 1, len(country_cells)))
+    for country, c in zip(country_cells, colours):
+        colour = np.random.rand() * np.ones(len(country_cells[country]))
+        plt.scatter(np.array(country_cells[country])[:, 0], np.array(country_cells[country])[:, 1], c=[c], zorder=10)
