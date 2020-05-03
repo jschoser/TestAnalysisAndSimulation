@@ -26,6 +26,9 @@ RETURN_BOTH = "Emissions and Ground Pollution"  # should not be used for map plo
 METHOD_AVG = "Area average"
 METHOD_MEDIAN = "Median"
 
+lon_range = [-28.12 - 0.625/2, 48.12 + 0.625/2]
+lat_range = [31.5 - 0.5/2, 68.5 + 0.5/2]
+
 
 # return the name of a cache file which was created using the same settings that the program is now run on. Will be used
 # to look for such a file or create one if it doesn't already exist
@@ -48,7 +51,8 @@ def data_filename(poll_coll, summer, poll_on):
 # ordered dictionary with the format "country_name: [[list of polygons that it is made up of], total area]"
 def create_country_polygons(shapefile_path="Shapefiles/CNTR_RG_20M_2016_4326.shp",
                             country_list_filename="countries.json"):
-    frame = geometry.Polygon([(-30, 30), (50, 30), (50, 70), (-30, 70)])  # the geographic area for which we have data
+    frame = geometry.Polygon([(lon_range[0], lat_range[0]), (lon_range[1], lat_range[0]), (lon_range[1], lat_range[1]),
+                              (lon_range[0], lat_range[1])])  # the geographic area for which we have data
     geod = Geod('+a=6378137 +f=0.0033528106647475126')  # object used for conversion from degrees to km
 
     # read the shape file
@@ -356,8 +360,8 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
         ax.set_xlabel(add_info)
 
     # only display the region for which we have data
-    ax.set_xlim([-30, 50])
-    ax.set_ylim([30, 70])
+    ax.set_xlim([lon_range[0], lon_range[1]])
+    ax.set_ylim([lat_range[0], lat_range[1]])
     # ax.set_axis_off()  # turns of coordinate axes
 
     # find maximum and minimum value to scale the colour coding
