@@ -325,6 +325,12 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
         if mode == RETURN_RATIO or mode == RETURN_POLLUTION else ""
     chemical_decription += ("Emission chemical: " + em_chemical + " | ")\
         if mode == RETURN_RATIO or mode == RETURN_EMISSIONS else ""
+    if mode != RETURN_BOTH:
+        chemical_decription += "Units: " + ("$\mu g/m^3$" if poll_chemical != "SpeciesConc_O3" else
+                                             "mol/(mol of dry air)") if mode != RETURN_EMISSIONS else ""
+        chemical_decription += " / (" if mode == RETURN_RATIO else ""
+        chemical_decription += "$kg/m^2/day$" if mode != RETURN_POLLUTION else ""
+        chemical_decription += (")" if mode == RETURN_RATIO else "") + " | "
     return chemical_decription + "Time frame for pollution: " + ("July" if summer else "January") +\
            " 2005 | " + (("Altitude levels for emission: " + str(emission_levels.start) + " to " +
            str(emission_levels.stop) + " | ") if mode != RETURN_POLLUTION else "") + "Averaging method: " + method
@@ -333,7 +339,7 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
 # show map with colour coding for the pollution and/or emission data
 def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
              add_title="", add_info="", show_removed=False, mapping=lin_mapping, colormap="coolwarm",
-             removed_color=(0, 0, 0, 1), show_cells=False):
+             removed_color=(0, 0, 0, 1), show_cells=False, vmax=None, vmin=None):
 
     # title for the entire plot
     plt.suptitle(mode + add_title + "\n\n" +
@@ -355,8 +361,8 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
     # ax.set_axis_off()  # turns of coordinate axes
 
     # find maximum and minimum value to scale the colour coding
-    min_val = min(processed_data.values())
-    max_val = max(processed_data.values())
+    min_val = min(processed_data.values()) if vmin is None else vmin
+    max_val = max(processed_data.values()) if vmax is None else vmax
 
     # loop over all countries for which we have found a pollution and emission data. These are not necessarily the
     # same countries as the ones in the polygon dictionary, since some countries (e.g. Vatican City) are too small
