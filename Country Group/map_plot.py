@@ -23,7 +23,6 @@ shown in a map
 @author Jakob Schoser
 """
 
-# TODO: Find neater solution for options
 # Always keep in mind that the data for countries such as Russia and Algeria are only representative of the part of that
 # country which lies within the data region (and not of the entire country)
 # Also note that the pollution data is not influenced by areas outside of the data region (so the data does not show
@@ -56,6 +55,13 @@ do_spatial_analysis = False  # whether a second figure with spatial autocorrelat
 
 colormap = "coolwarm"  # the color map used. Google "matplotlib color maps" to see the options
 
+vmin, vmax = None, None  # extremes of the colour legend. If set to None, they are automatically chosen
+
+mapping = ct.sqrt_mapping  # the mapping from values to the colour map. See country_tools for options
+
+
+# ================= NO NEED TO CHANGE THINGS BELOW HERE (USUALLY) ==================
+
 print("Creating country polygons...")
 countries = ct.create_country_polygons()
 countries_with_data = countries.copy()  # the countries which can be used for analysis later on
@@ -68,7 +74,7 @@ for country in unavailable:
 
 print("Plotting the data...")
 ct.plot_map(countries, data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
-            mapping=ct.sqrt_mapping, colormap=colormap)
+            mapping=mapping, colormap=colormap, vmax=vmax, vmin=vmin)
 
 moran_global, geary, moran_local = None, None, None
 
@@ -82,7 +88,8 @@ if do_spatial_analysis:
     plt.figure()
     ct.plot_map(countries, moran_local, mode, poll_chemical, em_chemical, summer, emission_levels, method,
                 add_title=" (Local Moran's I)", add_info="Global Moran's I: " + str(moran_global) +
-                                                         "\nGeary's C: " + str(geary), colormap=colormap)
+                                                         "\nGeary's C: " + str(geary), colormap=colormap,
+                mapping=mapping)
 
 print("Finished.\n")
 
