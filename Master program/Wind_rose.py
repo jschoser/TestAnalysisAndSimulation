@@ -9,16 +9,16 @@ import array
 import windrose
 
 # Enter middle coordinate
-y_mid = 52.3  # lat
-x_mid = 4.77 # lon
+y_mid = 51.47  # lat
+x_mid = -0.45 # lon
 # Location options
 # y 30.0 30.5 31.0 31.5 32.0 ... 68.0 68.5 69.0 69.5 70.0
 # x -30.0 -29.38 -28.75 -28.12 ... 48.12 48.75 49.38 50.0
 
 fig = plt.figure()
 
-# for loop for the 8 necessary plots
-for k in range(8):
+# for loop for the 9 necessary plots
+for k in range(9):
     # Coordinates
     if k == 0:
         y = y_mid + 0.5
@@ -44,6 +44,9 @@ for k in range(8):
     elif k == 7:
         y = y_mid
         x = x_mid - 0.625
+    elif k == 8:
+        y = y_mid
+        x = x_mid
 
     # Make arrays for pollution concentrations and wind speeds
     arr1 = np.array([])
@@ -54,13 +57,13 @@ for k in range(8):
     # wind directions ____________________________________________________________________________________________________
 
     # Select wind files of three days
-    dataDIR2 = 'E:/pythion/pythion wind/01/MERRA2.20050120.A3dyn.05x0625.EU.nc4'
+    dataDIR2 = 'C:/Python/Data/wind/07/MERRA2.20050720.A3dyn.05x0625.EU.nc4'
     DS2 = xr.open_dataset(dataDIR2)
 
-    dataDIR3 = 'E:/pythion/pythion wind/01/MERRA2.20050121.A3dyn.05x0625.EU.nc4'
+    dataDIR3 = 'C:/Python/Data/wind/07/MERRA2.20050721.A3dyn.05x0625.EU.nc4'
     DS3 = xr.open_dataset(dataDIR3)
 
-    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050122.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'C:/Python/Data/wind/07/MERRA2.20050722.A3dyn.05x0625.EU.nc4'
     DS4 = xr.open_dataset(dataDIR4)
 
     # Get wind speeds from file and add to array
@@ -98,14 +101,14 @@ for k in range(8):
     # concentrations_________________________________________________________________________________________-
 
     # Open pollution file with aircraft pollution
-    dataDIR = '../data/PM25.1h.JAN.ON.nc4'
+    dataDIR = '../data/PM25.1h.JUL.ON.nc4'
     DS = xr.open_dataset(dataDIR)
 
     # Get data set with right location and times from file
     # da=DS.PM25.sel(lat=y, lon=x, method='nearest')
     # da = da.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
     da1 = DS.PM25.sel(lat=y, lon=x, method='nearest')
-    da1 = da1.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
+    da1 = da1.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
 
     # Make array with average of 3 hours to match wind data
     for i in range(24):
@@ -119,12 +122,12 @@ for k in range(8):
     # _______________________________________________________________________
 
     # Open pollution file without aircraft pollution
-    dataDIR = '../data/PM25.1h.JAN.OFF.nc4'
+    dataDIR = '../data/PM25.1h.JUL.OFF.nc4'
     DS = xr.open_dataset(dataDIR)
 
     # Make datasets for all locations around middle point
     da2 = DS.PM25.sel(lat=y, lon=x, method='nearest')
-    da2 = da2.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
+    da2 = da2.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
 
 
     # Make array with average of 3 hours to match wind data, while choosing correct dataset to match wind direction
@@ -158,10 +161,14 @@ for k in range(8):
         plotloc = 7
     elif k == 7:
         plotloc = 4
+    elif k == 8:
+        plotloc = 5
 
     # Make wind rose plot
     ax = fig.add_subplot(3, 3, plotloc, projection='windrose')
     ax.bar(wd, ws, nsector=8, bins=np.arange(0, 0.028, 0.004), cmap=cm.OrRd, opening=0.85, edgecolor='white')
+    ax.set_yticks(np.arange(4, 20, step=4))
+    ax.set_yticklabels(np.arange(4, 20, step=4))
 
     # Make wind rose plot
     #ax = WindroseAxes.from_ax()
