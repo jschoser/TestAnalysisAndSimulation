@@ -7,7 +7,7 @@ from matplotlib import animation
 month = '01'
 day = '20'
 
-dataset = netcdf_dataset('../Data/wind/' + month + '/MERRA2.2005' + month + day + '.A3dyn.05x0625.EU.nc4')
+dataset = netcdf_dataset('E:/pythion/pythion wind/01/MERRA2.20050121.A3dyn.05x0625.EU.nc4')
 
 
 def unpack_posdata():
