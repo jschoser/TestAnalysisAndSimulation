@@ -421,7 +421,7 @@ def plot_grid(country_cell_filename="country_cells.json"):
 
 def plot_high_res_map(poll_coll, em_chemical, poll_chemical, emission_levels, summer, mode,
                       em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data", add_title="",
-                      colormap="coolwarm", mult_pop=True, vmax=None, vmin=None, pop_filename="Population.nc4"):
+                      colormap="coolwarm", mult_pop=False, vmax=None, vmin=None, pop_filename="Population.nc4"):
 
     em_filepath = data_dir / em_filename
     poll_on_filepath = data_dir / data_filename(poll_coll, summer, True)
@@ -445,11 +445,15 @@ def plot_high_res_map(poll_coll, em_chemical, poll_chemical, emission_levels, su
     DS_pop = xr.open_dataset(pop_filepath)
     da_pop = DS_pop.pop
 
-    da_data = da_poll
-    if mode == RETURN_EMISSIONS:
+    if mode == RETURN_POLLUTION:
+        da_data = da_poll
+    elif mode == RETURN_EMISSIONS:
         da_data = da_em
-    elif mode == RETURN_RATIO:
-        da_data /= da_em
+    elif mode == RETURN_RATIO:  # doesn't work. Grid not the same!
+        da_data = da_poll / da_em
+    else:
+        print("Invalid mode")
+        return
 
     if mult_pop:
         da_data *= da_pop / 1E6  # does this make sense when the mode is RETURN_RATIO?
