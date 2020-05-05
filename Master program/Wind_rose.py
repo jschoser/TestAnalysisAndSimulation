@@ -54,13 +54,13 @@ for k in range(8):
     # wind directions ____________________________________________________________________________________________________
 
     # Select wind files of three days
-    dataDIR2 = 'E:/pythion/pythion wind/07/MERRA2.20050720.A3dyn.05x0625.EU.nc4'
+    dataDIR2 = 'E:/pythion/pythion wind/01/MERRA2.20050120.A3dyn.05x0625.EU.nc4'
     DS2 = xr.open_dataset(dataDIR2)
 
-    dataDIR3 = 'E:/pythion/pythion wind/07/MERRA2.20050721.A3dyn.05x0625.EU.nc4'
+    dataDIR3 = 'E:/pythion/pythion wind/01/MERRA2.20050121.A3dyn.05x0625.EU.nc4'
     DS3 = xr.open_dataset(dataDIR3)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050722.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050122.A3dyn.05x0625.EU.nc4'
     DS4 = xr.open_dataset(dataDIR4)
 
     # Get wind speeds from file and add to array
@@ -98,14 +98,14 @@ for k in range(8):
     # concentrations_________________________________________________________________________________________-
 
     # Open pollution file with aircraft pollution
-    dataDIR = '../data/PM25.1h.JUL.ON.nc4'
+    dataDIR = '../data/PM25.1h.JAN.ON.nc4'
     DS = xr.open_dataset(dataDIR)
 
     # Get data set with right location and times from file
     # da=DS.PM25.sel(lat=y, lon=x, method='nearest')
     # da = da.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
     da1 = DS.PM25.sel(lat=y, lon=x, method='nearest')
-    da1 = da1.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
+    da1 = da1.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
 
     # Make array with average of 3 hours to match wind data
     for i in range(24):
@@ -119,12 +119,12 @@ for k in range(8):
     # _______________________________________________________________________
 
     # Open pollution file without aircraft pollution
-    dataDIR = '../data/PM25.1h.JUL.OFF.nc4'
+    dataDIR = '../data/PM25.1h.JAN.OFF.nc4'
     DS = xr.open_dataset(dataDIR)
 
     # Make datasets for all locations around middle point
     da2 = DS.PM25.sel(lat=y, lon=x, method='nearest')
-    da2 = da2.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
+    da2 = da2.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
 
 
     # Make array with average of 3 hours to match wind data, while choosing correct dataset to match wind direction
