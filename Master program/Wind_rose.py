@@ -9,8 +9,8 @@ import array
 import windrose
 
 # Enter middle coordinate
-y_mid = 52.3  # lat
-x_mid = 4.8  # lon
+y_mid = 40.5  # lat
+x_mid = -3.75 # lon
 # Location options
 # y 30.0 30.5 31.0 31.5 32.0 ... 68.0 68.5 69.0 69.5 70.0
 # x -30.0 -29.38 -28.75 -28.12 ... 48.12 48.75 49.38 50.0
@@ -109,7 +109,11 @@ for k in range(8):
 
     # Make array with average of 3 hours to match wind data
     for i in range(24):
-        a = (da1[3 * i] + da1[3 * i + 1] + da1[3 * i + 2]) / 3
+        #a = (da1[3 * i] + da1[3 * i + 1] + da1[3 * i + 2]) / 3
+        if i < 23:
+            a = (da1[3 * i + 2] + da1[3 * i + 3]) / 2
+        else:
+            a = da1[3 * i + 2]
         arr2 = np.array([a])
         arr1 = np.append(arr1, arr2)
     # _______________________________________________________________________
@@ -125,7 +129,11 @@ for k in range(8):
 
     # Make array with average of 3 hours to match wind data, while choosing correct dataset to match wind direction
     for i in range(24):
-        a = (da2[3 * i] + da2[3 * i + 1] + da2[3 * i + 2]) / 3
+        #a = (da2[3 * i] + da2[3 * i + 1] + da2[3 * i + 2]) / 3
+        if i < 23:
+            a = (da2[3 * i + 2] + da2[3 * i + 3])/2
+        else:
+            a = da2[3 * i + 2]
         arr2 = np.array([a])
         arr3 = np.append(arr3, arr2)
 
