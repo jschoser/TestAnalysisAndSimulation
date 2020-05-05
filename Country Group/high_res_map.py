@@ -4,30 +4,27 @@ import xarray as xr
 import numpy as np
 from matplotlib import pyplot as plt
 
-summer = True  # used to select between pollution data for January and July
+summer = True   # used to select between pollution data for January and July
 
-# the altitude levels over which emissions will be considered. Check Altitude_levels.txt for conversion to km
-emission_levels = slice(1, 32)
+poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
-# NetCDF files containing pollution with aircraft on and off, respectively
-poll_on_filename = ct.data_dir() / "Soot.24h.{}.ON.nc4".format("JUL" if summer else "JAN")
-poll_off_filename = ct.data_dir() / "Soot.24h.{}.OFF.nc4".format("JUL" if summer else "JAN")
+# the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
+# data sets inside the .nc4 files you selected
+poll_chemical = "AerMassBC"
+em_chemical = "BC"
 
-em_filename = ct.data_dir() / "AvEmFluxes.nc4"  # NetCDF file containing aircraft emissions
+# the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
+# conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude
+emission_levels = slice(0, 32)
 
-poll_on_DS = xr.open_dataset(poll_on_filename)
-poll_off_DS = xr.open_dataset(poll_off_filename)
-poll_da = (poll_on_DS.AerMassBC - poll_off_DS.AerMassBC).sel(lev=1, method='nearest').sum(dim='time')
+# TODO: Ratio doesn't work yet, because apparently the grid is not the same in emissions and pollution?
+mode = ct.RETURN_POLLUTION  # the statistic which is plotted (emissions, pollution or ratio between them)
 
-em_DS = xr.open_dataset(em_filename)
-em_da = em_DS.BC.sel(lev=emission_levels).sum(dim='lev')
+colormap = "coolwarm"  # the color map used. Google "matplotlib color maps" to see the options
 
-ratio_da = poll_da / em_da
-ratio_da = np.log(ratio_da)
+vmin, vmax = 0, 0.001  # extremes of the colour legend. If set to None, they are automatically chosen
 
-proj = crs.PlateCarree()
-ax = plt.axes(projection=proj)
-ax.coastlines(resolution='50m')
-ratio_da.plot()
+ct.plot_high_res_map(poll_coll, em_chemical, poll_chemical, emission_levels, summer, mode, colormap=colormap,
+                     vmin=vmin, vmax=vmax)
 
 plt.show()

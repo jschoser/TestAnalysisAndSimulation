@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import cartopy.io.shapereader as shpreader
+from cartopy import crs
 from shapely import geometry
 import xarray as xr
 import numpy as np
@@ -126,11 +127,12 @@ def find_country_name(country_polygons, lon, lat):
 def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
                       em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data",
                       recalculate_country_cells=False, country_cell_filename="country_cells.json", method=METHOD_AVG,
-                      outliers=None, mode=RETURN_RATIO):
+                      outliers=None, mode=RETURN_RATIO, mult_pop=False, pop_filename="Population.nc4"):
 
     em_filepath = data_dir / em_filename
     poll_on_filepath = data_dir / data_filename(poll_coll, summer, True)
     poll_off_filepath = data_dir / data_filename(poll_coll, summer, False)
+    pop_filepath = data_dir / pop_filename
 
     DS = xr.open_dataset(em_filepath)
     da_em = getattr(DS, em_chemical) * 24 * 3600  # select only the specified emissions and convert to "per day"
@@ -141,6 +143,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     # subtract pollution data without aircraft from pollution with aircraft to retrieve the pollution caused by
     # aircraft only. Also, only select the appropriate chemical
     da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
+
+    DS_pop = xr.open_dataset(pop_filepath)
+    da_pop = DS_pop.pop
 
     poll_em_data = {}
     lon_axis = da_em.coords['lon'].values  # the longitude values of the data grid
@@ -184,6 +189,12 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
             # emission and pollution. For pollution, divide by the number of time steps to get the time average
             cell_em = np.sum(da_em.sel(lon=cell[0], lat=cell[1], lev=emission_levels).values)
             cell_poll = np.sum(da_poll.sel(lon=cell[0], lat=cell[1], lev=1, method='nearest').values) / poll_timesteps
+
+            if mult_pop:  # TODO: is this really the best way of using it? (think of mode == RETURN_RATIO)
+                cell_pop = da_pop.sel(lon=cell[0], lat=cell[1]).values
+                cell_em *= cell_pop
+                cell_poll *= cell_pop
+
             poll_em_data[country][0].append(cell_em)
             poll_em_data[country][1].append(cell_poll)
 
@@ -324,7 +335,7 @@ def log_mapping(val, min_val, max_val):
     return np.log((val - min_val) / (max_val - min_val) + 1) / np.log(2)
 
 
-def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode=RETURN_RATIO):
+def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode):
     chemical_decription = ("Pollution chemical: " + poll_chemical + " | ")\
         if mode == RETURN_RATIO or mode == RETURN_POLLUTION else ""
     chemical_decription += ("Emission chemical: " + em_chemical + " | ")\
@@ -404,3 +415,47 @@ def plot_grid(country_cell_filename="country_cells.json"):
     for country, c in zip(country_cells, colours):
         colour = np.random.rand() * np.ones(len(country_cells[country]))
         plt.scatter(np.array(country_cells[country])[:, 0], np.array(country_cells[country])[:, 1], c=[c], zorder=10)
+
+
+def plot_high_res_map(poll_coll, em_chemical, poll_chemical, emission_levels, summer, mode,
+                      em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data", add_title="",
+                      colormap="coolwarm", mult_pop=True, vmax=None, vmin=None, pop_filename="Population.nc4"):
+
+    em_filepath = data_dir / em_filename
+    poll_on_filepath = data_dir / data_filename(poll_coll, summer, True)
+    poll_off_filepath = data_dir / data_filename(poll_coll, summer, False)
+    pop_filepath = data_dir / pop_filename
+
+    DS = xr.open_dataset(em_filepath)
+    da_em = getattr(DS, em_chemical).sel(lev=emission_levels).sum(dim='lev') * 24 * 3600  # select only the specified emissions and convert to "per day"
+
+    DS_on = xr.open_dataset(poll_on_filepath)
+    DS_off = xr.open_dataset(poll_off_filepath)
+
+    # subtract pollution data without aircraft from pollution with aircraft to retrieve the pollution caused by
+    # aircraft only. Also, only select the appropriate chemical
+    da_poll = (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)).sel(lev=1, method='nearest')
+
+    # number of time steps in the pollution file
+    poll_timesteps = len(da_poll.coords["time"].values)
+    da_poll = da_poll.sum(dim='time') / poll_timesteps
+
+    DS_pop = xr.open_dataset(pop_filepath)
+    da_pop = DS_pop.pop
+
+    da_data = da_poll
+    if mode == RETURN_EMISSIONS:
+        da_data = da_em
+    elif mode == RETURN_RATIO:
+        da_data /= da_em
+
+    if mult_pop:
+        da_data *= da_pop / 1E6  # does this make sense when the mode is RETURN_RATIO?
+
+    proj = crs.PlateCarree()
+    ax = plt.axes(projection=proj)
+    ax.coastlines(resolution='50m')
+    ax.set_title(mode + add_title + "\n\n" + generate_sub_title(poll_chemical, em_chemical, summer, emission_levels,
+                                                            "High res", mode))
+
+    da_data.plot(cmap=colormap, vmin=vmin, vmax=vmax)
