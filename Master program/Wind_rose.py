@@ -9,16 +9,16 @@ import array
 import windrose
 
 # Enter middle coordinate
-y_mid = 40.5  # lat
-x_mid = -3.75 # lon
+y_mid = 51.47  # lat
+x_mid = -0.45 # lon
 # Location options
 # y 30.0 30.5 31.0 31.5 32.0 ... 68.0 68.5 69.0 69.5 70.0
 # x -30.0 -29.38 -28.75 -28.12 ... 48.12 48.75 49.38 50.0
 
 fig = plt.figure()
 
-# for loop for the 8 necessary plots
-for k in range(8):
+# for loop for the 9 necessary plots
+for k in range(9):
     # Coordinates
     if k == 0:
         y = y_mid + 0.5
@@ -44,6 +44,9 @@ for k in range(8):
     elif k == 7:
         y = y_mid
         x = x_mid - 0.625
+    elif k == 8:
+        y = y_mid
+        x = x_mid
 
     # Make arrays for pollution concentrations and wind speeds
     arr1 = np.array([])
@@ -158,10 +161,14 @@ for k in range(8):
         plotloc = 7
     elif k == 7:
         plotloc = 4
+    elif k == 8:
+        plotloc = 5
 
     # Make wind rose plot
     ax = fig.add_subplot(3, 3, plotloc, projection='windrose')
     ax.bar(wd, ws, nsector=8, bins=np.arange(0, 0.028, 0.004), cmap=cm.OrRd, opening=0.85, edgecolor='white')
+    ax.set_yticks(np.arange(4, 20, step=4))
+    ax.set_yticklabels(np.arange(4, 20, step=4))
 
     # Make wind rose plot
     #ax = WindroseAxes.from_ax()
