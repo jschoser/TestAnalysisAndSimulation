@@ -9,8 +9,8 @@ import array
 import windrose
 
 # Enter middle coordinate
-y_mid = 40.5  # lat
-x_mid = -3.75 # lon
+y_mid = 52.3  # lat
+x_mid = 4.77 # lon
 # Location options
 # y 30.0 30.5 31.0 31.5 32.0 ... 68.0 68.5 69.0 69.5 70.0
 # x -30.0 -29.38 -28.75 -28.12 ... 48.12 48.75 49.38 50.0
@@ -54,13 +54,13 @@ for k in range(8):
     # wind directions ____________________________________________________________________________________________________
 
     # Select wind files of three days
-    dataDIR2 = 'C:/Python/Data/wind/07/MERRA2.20050720.A3dyn.05x0625.EU.nc4'
+    dataDIR2 = 'E:/pythion/pythion wind/07/MERRA2.20050720.A3dyn.05x0625.EU.nc4'
     DS2 = xr.open_dataset(dataDIR2)
 
-    dataDIR3 = 'C:/Python/Data/wind/07/MERRA2.20050721.A3dyn.05x0625.EU.nc4'
+    dataDIR3 = 'E:/pythion/pythion wind/07/MERRA2.20050721.A3dyn.05x0625.EU.nc4'
     DS3 = xr.open_dataset(dataDIR3)
 
-    dataDIR4 = 'C:/Python/Data/wind/07/MERRA2.20050722.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050722.A3dyn.05x0625.EU.nc4'
     DS4 = xr.open_dataset(dataDIR4)
 
     # Get wind speeds from file and add to array
