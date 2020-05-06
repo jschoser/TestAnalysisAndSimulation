@@ -6,7 +6,8 @@ import seaborn as sb
 
 summer = False
 emission_levels = slice(0, 32)
-with_scatterplots = False
+save_with_scatterplots = False
+with_labels = False
 
 names = ["Fuelburn", "NO2", "HC", "CO", "BC", "PM25", "AerMassSO4", "AerMassNIT", "AerMassNH4", "AerMassPOA",
          "AerMassBC", "O3"]
@@ -18,12 +19,12 @@ corr_type = 'pearson'  # for a different correlation indicator, try method='spea
 corr_df = corr = df.corr(method=corr_type)  # calculate correlation matrix
 df_lt = corr_df.where(np.tril(np.ones(corr_df.shape)).astype(np.bool))
 
-hmap = sb.heatmap(df_lt, cmap="coolwarm", vmin=-0.9, vmax=1, annot=True, cbar=False)
+hmap = sb.heatmap(df_lt, cmap="coolwarm", annot=True, cbar=False)
 
 plt.title("Emission levels: " + str(emission_levels.start) + " to " + str(emission_levels.stop) +
           " | " + ("July" if summer else "January") + " 2005")
 
-if with_scatterplots:
+if save_with_scatterplots:
     plt.savefig("MatrixOutput/Correlation matrix")
 
     for i in range(int(np.ceil(len(names) / 2))):
@@ -38,7 +39,12 @@ if with_scatterplots:
                 plt.axis([min(x), max(x), min(y), max(y)])
                 plt.xlabel(names[i])
                 plt.ylabel(names[j])
+                if with_labels:
+                    for ci in range(len(x)):
+                        plt.annotate(df.index.values[ci], [x[ci], y[ci]])
                 plt.savefig("MatrixOutput/Scatter plot " + names[i] + " vs " + names[j])
+
+    print("All figures saved to current directory")
 
 else:
     plt.show()
