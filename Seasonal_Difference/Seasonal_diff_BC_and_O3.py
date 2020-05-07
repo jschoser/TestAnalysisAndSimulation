@@ -9,7 +9,7 @@ from Altitude_converter import altitude_to_eta
 h = 0
 
 # Enter the pollutant (Black Carbon ('BC') or Ozone ('O3'))
-pollutant = 'O3'
+pollutant = 'BC'
 
 # ======================================================================================
 
@@ -89,3 +89,4 @@ ax.coastlines(resolution='50m')
 seasonal_dif.plot(cmap='coolwarm', vmax=100, vmin=-100)
 
 plt.show()
+print("Done")
