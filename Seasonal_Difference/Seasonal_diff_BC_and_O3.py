@@ -93,7 +93,7 @@ im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=100, vmin=-100, a
 cb = plt.colorbar(im, orientation="vertical", shrink = 0.55)
 
 # Zoom in to avoid white edges
-ax.margins(0.004)
+ax.margins(0.002)
 
 # This line sets an empty title, because otherwise xarray automatically sets
 ax.set_title("")
