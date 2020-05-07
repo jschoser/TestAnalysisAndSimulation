@@ -159,7 +159,7 @@ stddev = stats.stdev(perc_arr_val)
 
 # Print ratio array in a nice way
 pp = PrettyPrinter(indent=4)
-# pp.pprint(perc_arr_named)
+pp.pprint(perc_arr_named)
 
 print('MEAN = ' + str(avg))
 print('MEDIAN = ' + str(med))
@@ -182,7 +182,7 @@ ax.grid(which='major', alpha=0.5)
 
 ax.set_yticks([])
 
-plt.title('% of aircraft-attributable PM2.5 to base PM2.5')
+plt.title('% aircraft-attributable PM2.5 to base PM2.5')
 
 plt.tight_layout()
 plt.show()
