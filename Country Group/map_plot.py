@@ -48,7 +48,7 @@ emission_levels = slice(0, 32)
 # they make it impossible to see any differences between the other countries
 outliers = []  # ["Iraq", "Israel", "Latvia"]
 
-mode = ct.RETURN_RATIO  # the statistic which is plotted (emissions, pollution or ratio between them)
+mode = ct.RETURN_POLLUTION  # the statistic which is plotted (emissions, pollution or ratio between them)
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
 do_spatial_analysis = False  # whether a second figure with spatial autocorrelation indicators should be displayed
@@ -59,6 +59,8 @@ vmin, vmax = None, None  # extremes of the colour legend. If set to None, they a
 
 mapping = ct.sqrt_mapping  # the mapping from values to the colour map. See country_tools for options
 
+mult_pop = False
+
 
 # ================= NO NEED TO CHANGE THINGS BELOW HERE (USUALLY) ==================
 
@@ -68,7 +70,7 @@ countries_with_data = countries.copy()  # the countries which can be used for an
 
 print("Retrieving pollution and emission data...")
 data, unavailable = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
-                                         mode=mode, outliers=outliers, method=method)
+                                         mode=mode, outliers=outliers, method=method, mult_pop=mult_pop)
 for country in unavailable:
     del countries_with_data[country]
 
