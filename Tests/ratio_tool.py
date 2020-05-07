@@ -1,5 +1,7 @@
 import numpy as np
 from pprint import PrettyPrinter
+import matplotlib.pyplot as plt
+import statistics as stats
 
 # =============================================================================
 # --------------------AIRCRAFT ONLY DATA---------------------------------------
@@ -131,7 +133,9 @@ air_off = np.array([    ('Albania', 11.008944668602071),
 
 # Initialize arrays to store ratio and percentage
 ratio_arr = []
-perc_arr = []
+perc_arr_named = []
+perc_arr_val = []
+tot = 0
 
 # =============================================================================
 
@@ -140,13 +144,46 @@ for i in range(len(air_only)):
     if air_only[i, 0] != air_off[i, 0]:
         print('ERROR: ARRAY ELEMENTS (index = ' + str(i) +' ) NOT COHERENT')
 
-    ratio_arr.append([air_off[i, 0], (float(air_only[i,1]) / float(air_off[i,1]))])
-    perc_arr.append((float(air_only[i,1]) / float(air_off[i,1]))*100)
+    ratio = float(air_only[i,1]) / float(air_off[i,1])
+    tot += ratio
+
+    ratio_arr.append([air_off[i, 0], ratio])
+    perc_arr_named.append([air_off[i, 0], round(ratio*100, 3)])
+    perc_arr_val.append(ratio*100)
+
+avg = tot / len(perc_arr_val) * 100
+med = np.median(perc_arr_val)
+stddev = stats.stdev(perc_arr_val)
 
 # =============================================================================
 
 # Print ratio array in a nice way
 pp = PrettyPrinter(indent=4)
-pp.pprint(ratio_arr)
+# pp.pprint(perc_arr_named)
 
+print('MEAN = ' + str(avg))
+print('MEDIAN = ' + str(med))
+print('SD = ' + str(stddev))
+
+# =============================================================================
+
+# Make boxplot
+fig = plt.figure(1, figsize=(10, 3))
+ax = fig.add_subplot(111)
+bp = ax.boxplot(perc_arr_val, vert=False, showmeans=True, meanline=True, notch=True)
+
+major_ticks = np.arange(0, 0.5, 0.05)
+minor_ticks = np.arange(0, 0.45, 0.01)
+ax.set_xticks(major_ticks)
+ax.set_xticks(minor_ticks, minor=True)
+
+ax.grid(which='minor', alpha=0.2)
+ax.grid(which='major', alpha=0.5)
+
+ax.set_yticks([])
+
+plt.title('% of aircraft-attributable PM2.5 to base PM2.5')
+
+plt.tight_layout()
+plt.show()
 
