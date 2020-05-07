@@ -146,6 +146,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     # aircraft only. Also, only select the appropriate chemical
     da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
 
+    print(da_em.coords)
+    print(da_poll.coords)
+
     DS_pop = xr.open_dataset(pop_filepath)
     da_pop = DS_pop.pop
 
