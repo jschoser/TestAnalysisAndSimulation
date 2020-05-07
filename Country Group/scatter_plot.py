@@ -37,14 +37,14 @@ Tunisia = ["Tunisia", "Tunisia"]
 # Egypt = ["Egypt","Egypt"]
 All_groups = [British_Isles, Asian, Iberian_Peninsula, Southeast, Scandinavia, Central_Europe, Turkey,Baltics ,Eastern_Europe ,Iceland ,Germany ,France ,Switzerland ,Italy ,Poland ,Belgium ,Netherlands ,Luxembourg ,Morocco ,Algeria , Tunisia ]
 
-summer = True   # used to select between pollution data for January and July
+summer = False   # used to select between pollution data for January and July
 
-poll_coll = "O3.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "Aerosol.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "SpeciesConc_O3"
-em_chemical = "NO2"
+poll_chemical = "AerMassSO4"
+em_chemical = "BC"
 
 em_mult = 1
 poll_mult = 1

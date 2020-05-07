@@ -4,23 +4,47 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import seaborn as sb
 
-# this is just downloading a random data set I downloaded, has to be replaced by our data
-# from sklearn.datasets import load_breast_cancer
-# data = load_breast_cancer()
+summer = False
+emission_levels = slice(0, 32)
+save_with_scatterplots = False
+with_labels = False
 
 names = ["Fuelburn", "NO2", "HC", "CO", "BC", "PM25", "AerMassSO4", "AerMassNIT", "AerMassNH4", "AerMassPOA",
          "AerMassBC", "O3"]
 
-data = ct.find_matrix_data(ct.POLLUTION_COLLECTIONS, slice(0,32), True)
+data = ct.find_matrix_data(ct.POLLUTION_COLLECTIONS, emission_levels, summer)
 df = pd.DataFrame.from_dict(data, orient='index', columns=names)
 
-# change to dataFrame
-# df = pd.DataFrame(data.data, columns=data.feature_names)
-
-corr_type = 'pearson' # for a different correlation indicator, try method='spearman' or method='kendall'
-corr_df = corr = df.corr(method=corr_type) #calculate correlation matrix
+corr_type = 'pearson'  # for a different correlation indicator, try method='spearman' or method='kendall'
+corr_df = corr = df.corr(method=corr_type)  # calculate correlation matrix
 df_lt = corr_df.where(np.tril(np.ones(corr_df.shape)).astype(np.bool))
 
-hmap=sb.heatmap(df_lt,cmap="coolwarm", vmin=-0.9, vmax=1)
+hmap = sb.heatmap(df_lt, cmap="coolwarm", annot=True, cbar=False)
 
-plt.show()
+plt.title("Emission levels: " + str(emission_levels.start) + " to " + str(emission_levels.stop) +
+          " | " + ("July" if summer else "January") + " 2005")
+
+if save_with_scatterplots:
+    plt.savefig("MatrixOutput/Correlation matrix")
+
+    for i in range(int(np.ceil(len(names) / 2))):
+        for j in range(len(names)):
+            if i != j:
+                plt.figure()
+                plt.title("Emission levels: " + str(emission_levels.start) + " to " + str(emission_levels.stop) +
+                      " | " + ("July" if summer else "January") + " 2005")
+                x = df[names[i]]
+                y = df[names[j]]
+                plt.scatter(x, y)
+                plt.axis([min(x), max(x), min(y), max(y)])
+                plt.xlabel(names[i])
+                plt.ylabel(names[j])
+                if with_labels:
+                    for ci in range(len(x)):
+                        plt.annotate(df.index.values[ci], [x[ci], y[ci]])
+                plt.savefig("MatrixOutput/Scatter plot " + names[i] + " vs " + names[j])
+
+    print("All figures saved to current directory")
+
+else:
+    plt.show()

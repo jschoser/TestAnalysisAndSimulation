@@ -1,0 +1,110 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 11 09:58:30 2020
+
+@author: Egon Beyne
+"""
+
+import numpy as np
+
+"""
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/master
+"""
+
+
+def Altitude_Conversion(h):
+    # Import altitude level data
+    alt_dat = np.genfromtxt("Altitude_levels.txt", skip_header=3, usecols=(0, 1, 2))
+    # Iterate through altitude table
+    for i in range(len(alt_dat[:, 2]) - 1):
+        # Check if h is in interval
+        if alt_dat[i, 2] >= h > alt_dat[i + 1, 2]:
+
+            h_tab = alt_dat[i, 2]
+            alt_num = alt_dat[i, 1]
+        # Values if h<1 km
+        elif h < 1:
+            h_tab = 0
+            alt_num = 1
+
+    return h_tab, alt_num
+
+
+def eta_to_altitude_arr(eta_array):
+    alt_dat = np.genfromtxt("Altitude_levels.txt", skip_header=3, usecols=(1, 2))
+    grid = alt_dat[:, 0]
+    func = alt_dat[:, 1]
+    return np.interp(eta_array, grid, func)
+
+
+# generate altitude in km from a given eta
+def eta_to_altitude(h):
+    # Import altitude level data
+    alt_dat = np.genfromtxt("Altitude_levels.txt", skip_header=3, usecols=(0, 1, 2))
+    # Iterate through altitude table
+    altitude = min(alt_dat[:, 2])  # set to sea level
+    for i in range(len(alt_dat[:, 1]) - 1):
+        # Check if h is in interval
+        if alt_dat[i, 1] <= h < alt_dat[i + 1, 1]:
+            altitude = alt_dat[i, 2]
+
+    return altitude
+
+
+# generate eta from altitude in km
+def altitude_to_eta(h):
+    # Import altitude level data
+    alt_dat = np.genfromtxt("Altitude_levels.txt", skip_header=3, usecols=(0, 1, 2))
+    # Iterate through altitude table
+    eta = max(alt_dat[:, 1])  # set to sea level
+    for i in range(len(alt_dat[:, 2]) - 1):
+        # Check if h is in interval
+        if alt_dat[i, 2] >= h > alt_dat[i + 1, 2]:
+            eta = alt_dat[i, 1]
+        if h < 1:
+            eta = max(alt_dat[:, 1])
+
+    return eta
+
+
+def levels_to_altitude(h):
+    # Import altitude level data
+    alt_dat = np.genfromtxt("Altitude_levels.txt", skip_header=3, usecols=(0, 1, 2))
+    # Iterate through altitude table
+    altitude = min(alt_dat[:, 2])  # set to sea level
+    for i in range(len(alt_dat[:, 0]) - 1):
+        # Check if h is in interval
+        if alt_dat[i, 0] >= h > alt_dat[i + 1, 0]:
+            altitude = alt_dat[i, 2]
+
+    return altitude
+
+
+def altitude_to_levels(h):
+    # Import altitude level data
+    alt_dat = np.genfromtxt("Altitude_levels.txt", skip_header=3, usecols=(0, 1, 2))
+    # Iterate through altitude table
+    levels = min(alt_dat[:, 0])  # set to sea level
+    for i in range(len(alt_dat[:, 2]) - 1):
+
+        # Check if h is in interval
+        if alt_dat[i, 2] >= h > alt_dat[i + 1, 2]:
+            levels = alt_dat[i, 0]
+
+        if h < 1:
+            levels = min(alt_dat[:, 0])
+
+    return levels
+
+
+
+
+
+
+
+
+
+

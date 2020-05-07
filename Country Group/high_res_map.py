@@ -18,11 +18,11 @@ em_chemical = "BC"
 emission_levels = slice(0, 32)
 
 # TODO: Ratio doesn't work yet, because apparently the grid is not the same in emissions and pollution?
-mode = ct.RETURN_POLLUTION  # the statistic which is plotted (emissions, pollution or ratio between them)
+mode = ct.RETURN_RATIO # the statistic which is plotted (emissions, pollution or ratio between them)
 
 colormap = "coolwarm"  # the color map used. Google "matplotlib color maps" to see the options
 
-vmin, vmax = 0, 0.001  # extremes of the colour legend. If set to None, they are automatically chosen
+vmin, vmax = 0, None  # extremes of the colour legend. If set to None, they are automatically chosen
 
 ct.plot_high_res_map(poll_coll, em_chemical, poll_chemical, emission_levels, summer, mode, colormap=colormap,
                      vmin=vmin, vmax=vmax)
