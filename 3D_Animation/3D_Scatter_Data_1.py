@@ -174,6 +174,7 @@ def eta_to_altitude_arr(eta_array):
     func = alt_dat[:, 1]
     return np.interp(eta_array, grid, func)
 
+# ----------------------------------------------- Datapoints for pollution animation -----------------------------------------------
 
 def Datapoints():
     # Path to datafiles
@@ -223,6 +224,7 @@ def Datapoints():
 
     return xs, ys, zs
 
+# ------------------------------------------------- Plotting --------------------------------------------------------------------
 
 # Retrieve datapoints
 xs, ys, zs = Datapoints()

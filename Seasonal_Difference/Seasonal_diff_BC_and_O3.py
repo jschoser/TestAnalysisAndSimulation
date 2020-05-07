@@ -8,10 +8,10 @@ from Altitude_converter import altitude_to_eta
 # Select the altitude [km]
 h = 0
 
-# Enter the pollutant (Black Carbon ('BC') or Ozone ('O3'))
-pollutant = 'O3'
+# Enter the pollutant (Black Carbon ('BC') or Ozone ('Ozone'))
+pollutant = 'Ozone'
 
-# ======================================================================================
+# =======================================================================================
 
 # Convert the altitude
 h = altitude_to_eta(h)
@@ -26,7 +26,7 @@ if pollutant == 'BC':
     name_poll = 'AerMassBC'
 
 # Names of the dataset to be loaded if Ozone is selected
-elif pollutant == 'O3':
+elif pollutant == 'Ozone':
 
     # Dataset name
     name_DS = 'O3'
@@ -74,7 +74,8 @@ winter = winter / da_winter.time.size
 da = 100 * winter / summer - 100
 
 # Select the desired altitude
-seasonal_dif = da.sel(lev=h, method='nearest')  # .sel(time='2005-1-17')[0] # select appropriate level (ground) and day
+seasonal_dif = da.sel(lev=h, method='nearest')
+
 
 # select projection. Only seems to work with PlateCarree though
 proj = ccrs.PlateCarree()
@@ -86,6 +87,14 @@ ax = plt.axes(projection=proj)
 ax.coastlines(resolution='50m')
 
 # Plot the result
-seasonal_dif.plot(cmap='coolwarm', vmax=100, vmin=-100)
+im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=100, vmin=-100, add_colorbar = False)
 
+cb = plt.colorbar(im, orientation="vertical", shrink = 0.55)
+cb.set_label(label='Percentage Difference')
+cb.ax.tick_params(labelsize='large')
+
+
+ax.set_title("Seasonal Difference for " + pollutant)
+
+plt.xlabel("test")
 plt.show()
