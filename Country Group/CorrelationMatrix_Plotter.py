@@ -4,10 +4,10 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import seaborn as sb
 
-summer = False
-emission_levels = slice(0, 32)
-save_with_scatterplots = False
-with_labels = False
+summer = True
+emission_levels = slice(0, 8)
+save_with_scatterplots = True
+with_labels = True
 
 names = ["Fuelburn", "NO2", "HC", "CO", "BC", "PM25", "AerMassSO4", "AerMassNIT", "AerMassNH4", "AerMassPOA",
          "AerMassBC", "O3"]
