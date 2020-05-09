@@ -68,7 +68,6 @@ da = 100 * winter / summer - 100
 # Select the desired altitude
 seasonal_dif = da.sel(lev=h, method='nearest')
 
-
 # select projection. Only seems to work with PlateCarree though
 proj = ccrs.PlateCarree()
 
