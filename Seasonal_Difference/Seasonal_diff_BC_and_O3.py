@@ -58,17 +58,9 @@ da_winter = getattr(DS_winter_on, name_poll) - getattr(DS_winter_off, name_poll)
 da_summer = getattr(DS_summer_on, name_poll) - getattr(DS_summer_off, name_poll)
 
 # Average the data over time (one month)
-summer = 0
-for t in da_summer.time.values:
-    summer += da_summer.sel(time=t)
+summer = da_summer.mean(dim = 'time')
 
-summer = summer / da_summer.time.size
-
-winter = 0
-for t in da_winter.time.values:
-    winter += da_winter.sel(time=t)
-
-winter = winter / da_winter.time.size
+winter = da_winter.mean(dim = 'time')
 
 # Calculate the percentage difference between winter and summer
 da = 100 * winter / summer - 100
@@ -87,7 +79,7 @@ ax = plt.axes(projection=proj)
 ax.coastlines(resolution='50m')
 
 # Plot the result
-im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=100, vmin=-100, add_colorbar = False)
+im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=200, vmin=-200, add_colorbar = False)
 
 # Make a colorbar
 cb = plt.colorbar(im, orientation="vertical", shrink = 0.55)
