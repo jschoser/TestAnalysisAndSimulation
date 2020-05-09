@@ -9,8 +9,8 @@ import array
 import windrose
 
 # Enter middle coordinate
-y_mid = 52.3  # lat
-x_mid = 4.77 # lon
+y_mid = 40.5  # lat 40.5
+x_mid = -3.75 # lon-3.75
 # Location options
 # y 30.0 30.5 31.0 31.5 32.0 ... 68.0 68.5 69.0 69.5 70.0
 # x -30.0 -29.38 -28.75 -28.12 ... 48.12 48.75 49.38 50.0
@@ -59,67 +59,67 @@ for k in range(9):
     # wind directions ____________________________________________________________________________________________________
 
     # Select wind files of three days
-    dataDIR2 = 'E:/pythion/pythion wind/07/MERRA2.20050711.A3dyn.05x0625.EU.nc4'
+    dataDIR2 = 'E:/pythion/pythion wind/01/MERRA2.20050111.A3dyn.05x0625.EU.nc4'
     DS2 = xr.open_dataset(dataDIR2)
 
-    dataDIR3 = 'E:/pythion/pythion wind/07/MERRA2.20050712.A3dyn.05x0625.EU.nc4'
+    dataDIR3 = 'E:/pythion/pythion wind/01/MERRA2.20050112.A3dyn.05x0625.EU.nc4'
     DS3 = xr.open_dataset(dataDIR3)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050713.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050113.A3dyn.05x0625.EU.nc4'
     DS4 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050714.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050114.A3dyn.05x0625.EU.nc4'
     DS5 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050715.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050115.A3dyn.05x0625.EU.nc4'
     DS6 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050716.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050116.A3dyn.05x0625.EU.nc4'
     DS7 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050717.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050117.A3dyn.05x0625.EU.nc4'
     DS8 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050718.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050118.A3dyn.05x0625.EU.nc4'
     DS9 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050719.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050119.A3dyn.05x0625.EU.nc4'
     DS10 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050720.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050120.A3dyn.05x0625.EU.nc4'
     DS11= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050721.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050121.A3dyn.05x0625.EU.nc4'
     DS12= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050722.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050122.A3dyn.05x0625.EU.nc4'
     DS13= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050723.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050123.A3dyn.05x0625.EU.nc4'
     DS14= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050724.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050124.A3dyn.05x0625.EU.nc4'
     DS15= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050725.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050125.A3dyn.05x0625.EU.nc4'
     DS16= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050726.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050126.A3dyn.05x0625.EU.nc4'
     DS17= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050727.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050127.A3dyn.05x0625.EU.nc4'
     DS18= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050728.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050128.A3dyn.05x0625.EU.nc4'
     DS19 = xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050729.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050129.A3dyn.05x0625.EU.nc4'
     DS20= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050730.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050130.A3dyn.05x0625.EU.nc4'
     DS21= xr.open_dataset(dataDIR4)
 
-    dataDIR4 = 'E:/pythion/pythion wind/07/MERRA2.20050731.A3dyn.05x0625.EU.nc4'
+    dataDIR4 = 'E:/pythion/pythion wind/01/MERRA2.20050131.A3dyn.05x0625.EU.nc4'
     DS22= xr.open_dataset(dataDIR4)
 
     # Get wind speeds from file and add to array
@@ -249,23 +249,23 @@ for k in range(9):
     u = np.append(u, U)
     v = np.append(v, V)
 
-    for i in range(21):
-        a = (u[8 * i] + u[8 * i + 1]+u[8 * i + 2]+u[8 * i + 3]+u[8 * i + 4]+u[8 * i + 5]+u[8 * i + 6]+u[8 * i + 7])
-        arr2 = np.array([a])
-        arr7 = np.append(arr7, arr2)
 
-    for i in range(21):
-        a = (v[8 * i] + v[8 * i + 1]+v[8 * i + 2]+v[8 * i + 3]+v[8 * i + 4]+v[8 * i + 5]+v[8 * i + 6]+v[8 * i + 7])
-        arr2 = np.array([a])
-        arr8 = np.append(arr8, arr2)
 
 
     # Calculate wind direction from speeds
 
     # winddir = 180 + (180/pi) * np.arctan2(u,v)
-    winddir_over = 270 - np.arctan2(arr8, arr7) * 180 / pi
+    winddir_over = 270 - np.arctan2(v, u) * 180 / pi
     winddir = np.mod(winddir_over, 360)
     wd = winddir
+
+   # for i in range(21):
+    ###  arr7 = np.append(arr7, arr2)
+
+    #for i in range(21):
+     #   a = (v[8 * i] + v[8 * i + 1]+v[8 * i + 2]+v[8 * i + 3]+v[8 * i + 4]+v[8 * i + 5]+v[8 * i + 6]+v[8 * i + 7])
+      #  arr2 = np.array([a])
+       # arr8 = np.append(arr8, arr2)
 
 
     # print(u)
@@ -277,28 +277,28 @@ for k in range(9):
     # concentrations_________________________________________________________________________________________-
 
     # Open pollution file with aircraft pollution
-    dataDIR = '../data/Aerosol.24h.JUL.ON.nc4'
+    dataDIR = '../data/Aerosol.24h.JAN.ON.nc4'
     DS = xr.open_dataset(dataDIR)
 
     #print(DS.var)
 
     # Get data set with right location and times from file
     # da=DS.PM25.sel(lat=y, lon=x, method='nearest')
-    # da = da.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
+    # da = da.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
     da1 = DS.PM25.sel(lat=y, lon=x, lev=1,method='nearest')
-    #da1 = da1.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
+    #da1 = da1.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
 
     # Make array with average of 3 hours to match wind data
 
     # _______________________________________________________________________
 
     # Open pollution file without aircraft pollution
-    dataDIR = '../data/Aerosol.24h.JUL.OFF.nc4'
+    dataDIR = '../data/Aerosol.24h.JAN.OFF.nc4'
     DS = xr.open_dataset(dataDIR)
 
     # Make datasets for all locations around middle point
     da2 = DS.PM25.sel(lat=y, lon=x, lev=1,method='nearest')
-    #da2 = da2.sel(time=slice('2005-07-20T00:30:00.000000000', '2005-07-22T23:30:00.000000000'))
+    #da2 = da2.sel(time=slice('2005-01-20T00:30:00.000000000', '2005-01-22T23:30:00.000000000'))
 
 
     # Make array with average of 3 hours to match wind data, while choosing correct dataset to match wind direction
@@ -306,6 +306,19 @@ for k in range(9):
 
     # Substract pollution on and off to come to aircraft pollution
     ws = da1 - da2
+    for i in range (21):
+        a= ws[i]
+        arr2 = np.array([a])
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+        arr8 = np.append(arr8, arr2)
+
+    ws=arr8
 
     # plotting__________________________________________________________________________________________________
     # Set location of subplots around middle point
@@ -337,9 +350,9 @@ for k in range(9):
 
     # Make wind rose plot
     ax = fig.add_subplot(3, 3, plotloc, projection='windrose')
-    ax.bar(wd, ws, nsector=8, bins=np.arange(0, 0.105, 0.015), cmap=cm.OrRd, opening=0.85, edgecolor='white')
-    ax.set_yticks(np.arange(4, 12, step=4))
-    ax.set_yticklabels(np.arange(4, 12, step=4))
+    ax.bar(wd, ws, nsector=8, bins=np.arange(0, 0.07, 0.01), cmap=cm.OrRd, opening=0.85, edgecolor='white')
+    ax.set_yticks(np.arange(20, 70, step=20))
+    ax.set_yticklabels(np.arange(20, 70, step=20))
 
     # Make wind rose plot
     #ax = WindroseAxes.from_ax()
