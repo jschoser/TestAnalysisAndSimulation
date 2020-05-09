@@ -146,6 +146,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     # aircraft only. Also, only select the appropriate chemical
     da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
 
+    print(da_em.coords)
+    print(da_poll.coords)
+
     DS_pop = xr.open_dataset(pop_filepath)
     da_pop = DS_pop.pop
 
@@ -356,7 +359,7 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
 # show map with colour coding for the pollution and/or emission data
 def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
              add_title="", add_info="", show_removed=False, mapping=lin_mapping, colormap="coolwarm",
-             removed_color=(0, 0, 0, 1), show_cells=False, vmax=None, vmin=None):
+             removed_color=(0, 0, 0, 1), show_cells=True, vmax=None, vmin=None):
 
     # title for the entire plot
     plt.suptitle(mode + add_title + "\n\n" +
