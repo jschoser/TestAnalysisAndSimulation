@@ -82,6 +82,9 @@ IQR     = Q3 - Q1
 vmin    = Q1 - (1.5*IQR)
 vmax    = Q3 + (1.5*IQR)
 
+# Set the boundaries fixed to -200 and 200, for consistent pictures (disable these lines otherwise)
+vmin, vmax = -200, 200
+
 # select projection. Only seems to work with PlateCarree though
 proj = ccrs.PlateCarree()
 
