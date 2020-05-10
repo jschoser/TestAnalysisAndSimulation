@@ -11,7 +11,7 @@ h = 11
 alt = h
 
 # Enter the pollutant (Black Carbon ('BC') or Ozone ('Ozone'))
-pollutant = 'BC'
+pollutant = 'Ozone'
 
 # =======================================================================================
 
@@ -82,8 +82,6 @@ IQR     = Q3 - Q1
 vmin    = Q1 - (1.5*IQR)
 vmax    = Q3 + (1.5*IQR)
 
-
-
 # select projection. Only seems to work with PlateCarree though
 proj = ccrs.PlateCarree()
 
@@ -108,7 +106,7 @@ ax.set_title("")
 # # Save the image in a way to obtain a tighter layout via Python (only enable if you intend to use the figure).
 # # If you're going to plot a new figure with not the default settings (vmax = 200, vmin = -200, shrink = 055),
 # # please add that to the figure name to avoid confusion
-# plt.savefig("Seasonal Differences for " + pollutant + " at "
-# # + str(alt) + " km altitude",bbox_inches = 'tight') Show the plot
+# plt.savefig("Seasonal Differences for " + pollutant + " at " + str(alt) + " km altitude",bbox_inches = 'tight')
+# # Show the plot
 plt.show()
 
