@@ -6,7 +6,9 @@ from Altitude_converter import altitude_to_eta
 # ==================================== INPUT ============================================
 
 # Select the altitude [km]
-h = 0
+h = 11
+# Define variable alt for automatic naming system in the plt.savefig function
+alt = h
 
 # Enter the pollutant (Black Carbon ('BC') or Ozone ('Ozone'))
 pollutant = 'BC'
@@ -103,5 +105,10 @@ plt.axis([-27,47,33,67])
 # This line sets an empty title, because otherwise xarray automatically sets
 ax.set_title("")
 
-# Show the plot
+# # Save the image in a way to obtain a tighter layout via Python (only enable if you intend to use the figure).
+# # If you're going to plot a new figure with not the default settings (vmax = 200, vmin = -200, shrink = 055),
+# # please add that to the figure name to avoid confusion
+# plt.savefig("Seasonal Differences for " + pollutant + " at "
+# # + str(alt) + " km altitude",bbox_inches = 'tight') Show the plot
 plt.show()
+
