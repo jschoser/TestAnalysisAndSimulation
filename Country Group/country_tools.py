@@ -24,7 +24,8 @@ RETURN_POLLUTION = "Ground Pollution"
 RETURN_BOTH = "Emissions and Ground Pollution"  # should not be used for map plots, but is useful for scatter plots
 
 # different ways of to combine the data inside one country
-METHOD_AVG = "Area average"
+METHOD_AVG = "Area weighted average"
+METHOD_POP = "Multiplied by population"
 METHOD_MEDIAN = "Median"
 
 POLLUTION_COLLECTIONS = ["Aerosol.24h", "O3.24h", "Soot.24h"]
@@ -129,7 +130,7 @@ def find_country_name(country_polygons, lon, lat):
 def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
                       em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data",
                       recalculate_country_cells=False, country_cell_filename="country_cells.json", method=METHOD_AVG,
-                      outliers=None, mode=RETURN_RATIO, mult_pop=False, pop_filename="Population.nc4"):
+                      outliers=None, mode=RETURN_RATIO, pop_filename="Population.nc4"):
 
     em_filepath = data_dir / em_filename
     poll_on_filepath = data_dir / data_filename(poll_coll, summer, True)
@@ -145,9 +146,6 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     # subtract pollution data without aircraft from pollution with aircraft to retrieve the pollution caused by
     # aircraft only. Also, only select the appropriate chemical
     da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
-
-    print(da_em.coords)
-    print(da_poll.coords)
 
     DS_pop = xr.open_dataset(pop_filepath)
     da_pop = DS_pop.pop
@@ -195,18 +193,19 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
             cell_em = np.sum(da_em.sel(lon=cell[0], lat=cell[1], lev=emission_levels).values)
             cell_poll = np.sum(da_poll.sel(lon=cell[0], lat=cell[1], lev=1, method='nearest').values) / poll_timesteps
 
-            if mult_pop:  # TODO: is this really the best way of using it? (think of mode == RETURN_RATIO)
+            if method == METHOD_POP:  # TODO: is this really the best way of using it? (think of mode == RETURN_RATIO)
                 cell_pop = da_pop.sel(lon=cell[0], lat=cell[1]).values
                 cell_em *= cell_pop
                 cell_poll *= cell_pop
 
+            elif method == METHOD_AVG:
+                # calculate area of the cell to make an area-weighted average of all cells in the country
+                cell_lat_length = geod.line_length([cell[0], cell[0]], [cell[1] - 0.5/2, cell[1] + 0.5/2])
+                cell_lon_length = geod.line_length([cell[0] - 0.625/2, cell[0] + 0.625/2], [cell[1], cell[1]])
+                cell_areas.append(cell_lat_length * cell_lon_length)
+
             poll_em_data[country][0].append(cell_em)
             poll_em_data[country][1].append(cell_poll)
-
-            # calculate area of the cell to make an area-weighted average of all cells in the country
-            cell_lat_length = geod.line_length([cell[0], cell[0]], [cell[1] - 0.5/2, cell[1] + 0.5/2])
-            cell_lon_length = geod.line_length([cell[0] - 0.625/2, cell[0] + 0.625/2], [cell[1], cell[1]])
-            cell_areas.append(cell_lat_length * cell_lon_length)
 
         if method == METHOD_AVG:
             # perform area-weighted average between the cells
@@ -216,6 +215,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
         elif method == METHOD_MEDIAN:
             # calculate the median of emission and pollution values
             poll_em_data[country] = np.median(poll_em_data[country], axis=1)
+
+        elif method == METHOD_POP:
+            poll_em_data[country] = np.sum(poll_em_data[country], axis=1)
 
         else:
             print("Invalid averaging method:", method)
