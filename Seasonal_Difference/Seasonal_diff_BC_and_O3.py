@@ -80,7 +80,7 @@ ax = plt.axes(projection=proj)
 ax.coastlines(resolution='50m')
 
 # Plot the result
-im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=200, vmin=-200, add_colorbar = False)
+im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=200, vmin=-100, add_colorbar = False)
 
 # Make a colorbar
 cb = plt.colorbar(im, orientation="vertical", shrink = 0.55)
@@ -91,8 +91,10 @@ plt.axis([-27,47,33,67])
 # This line sets an empty title, because otherwise xarray automatically sets
 ax.set_title("")
 
-# Save the image in a way to obtain a tighter layout via Python
-plt.savefig("Seasonal Differences for " + pollutant + " at " + str(alt) + " km altitude",bbox_inches = 'tight')
-# Show the plot
+# # Save the image in a way to obtain a tighter layout via Python (only enable if you intend to use the figure).
+# # If you're going to plot a new figure with not the default settings (vmax = 200, vmin = -200, shrink = 055),
+# # please add that to the figure name to avoid confusion
+# plt.savefig("Seasonal Differences for " + pollutant + " at "
+# # + str(alt) + " km altitude",bbox_inches = 'tight') Show the plot
 plt.show()
 
