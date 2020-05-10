@@ -9,7 +9,7 @@ from Altitude_converter import altitude_to_eta
 h = 0
 
 # Enter the pollutant (Black Carbon ('BC') or Ozone ('Ozone'))
-pollutant = 'Ozone'
+pollutant = 'BC'
 
 # =======================================================================================
 
@@ -68,6 +68,20 @@ da = 100 * winter / summer - 100
 # Select the desired altitude
 seasonal_dif = da.sel(lev=h, method='nearest')
 
+# Calculate the first and third quartile
+Q1      = da.quantile(.25)
+Q3      = da.quantile(.75)
+
+# Calculate the interquartile range
+IQR     = Q3 - Q1
+
+# Calculate limits for outliers
+# Adjust the factors for better results
+vmin    = Q1 - (1.5*IQR)
+vmax    = Q3 + (1.5*IQR)
+
+
+
 # select projection. Only seems to work with PlateCarree though
 proj = ccrs.PlateCarree()
 
@@ -78,7 +92,7 @@ ax = plt.axes(projection=proj)
 ax.coastlines(resolution='50m')
 
 # Plot the result
-im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=200, vmin=-200, add_colorbar = False)
+im = seasonal_dif.plot.pcolormesh(ax=ax, cmap='coolwarm', vmax=vmax, vmin=vmin, add_colorbar = False)
 
 # Make a colorbar
 cb = plt.colorbar(im, orientation="vertical", shrink = 0.55)

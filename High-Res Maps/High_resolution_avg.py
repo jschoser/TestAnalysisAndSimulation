@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # =================================================== Input ============================================================
 
 # Choose the season
-season = 'Summer'
+season = 'Winter'
 
 # Choose the pollutant
 pollutant = 'Ozone'
@@ -58,7 +58,7 @@ IQR     = Q3 - Q1
 # the bounds for vmax are greater than the standard 1.5 when BC is selected,
 # but otherwise all of central Europe was seen as an outlier
 vmin    = Q1 - (1.5*IQR)
-vmax    = Q3 + ((1.5 + 1.5*(pollutant == 'BC'))*IQR)
+vmax    = Q3 + ((1.5 + 2*(pollutant == 'BC'))*IQR)
 
 # ============================================= Plotting Results =======================================================
 
@@ -78,7 +78,7 @@ im = DS_avg_grd.plot.pcolormesh(ax=ax, cmap='coolwarm',
                                 add_colorbar = False)
 
 # Make a colorbar
-cb = plt.colorbar(im, orientation="vertical", shrink = 0.55)
+cb = plt.colorbar(im, orientation="vertical", shrink = 0.53)
 
 # Set axis size to avoid white edges
 plt.axis([-27, 47, 33, 67])
