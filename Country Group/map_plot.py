@@ -59,8 +59,6 @@ vmin, vmax = None, None  # extremes of the colour legend. If set to None, they a
 
 mapping = ct.sqrt_mapping  # the mapping from values to the colour map. See country_tools for options
 
-mult_pop = False
-
 
 # ================= NO NEED TO CHANGE THINGS BELOW HERE (USUALLY) ==================
 
@@ -70,7 +68,7 @@ countries_with_data = countries.copy()  # the countries which can be used for an
 
 print("Retrieving pollution and emission data...")
 data, unavailable = ct.find_poll_em_data(countries, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
-                                         mode=mode, outliers=outliers, method=method, mult_pop=mult_pop)
+                                         mode=mode, outliers=outliers, method=method)
 for country in unavailable:
     del countries_with_data[country]
 
