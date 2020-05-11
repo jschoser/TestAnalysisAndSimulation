@@ -100,7 +100,7 @@ print("============= RESULTS ==============\n")
 
 print("These countries had no data available:", unavailable)
 print("Data:")
-pp.pprint(data)
+pp.pprint(sorted(data.items(), key=lambda item: item[1]))
 
 if do_spatial_analysis:
     print("Global Moran's I: ", moran_global)
