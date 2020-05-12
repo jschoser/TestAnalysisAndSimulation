@@ -147,13 +147,13 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     # aircraft only. Also, only select the appropriate chemical
 
     # BASE POLLUTION
-    # da_poll = getattr(DS_off, poll_chemical)
+    da_poll = getattr(DS_off, poll_chemical)
 
     # ADJUSTED BASE POLLUTION (OFF MINUS DIFFERENCE)
     # da_poll = getattr(DS_off, poll_chemical) - (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical))
 
     # DIFFERENCE
-    da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
+    # da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
 
     # RATIO
     # da_poll = (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)) \

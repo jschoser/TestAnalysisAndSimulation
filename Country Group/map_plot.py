@@ -31,7 +31,7 @@ shown in a map
 # AvEmMasses.nc4 can also be used instead of AvEmFluxes.nc4, but it does not contain any information about differences
 # in altitudes. It merely contains the sum of all emissions over a certain grid cell
 
-summer = True   # used to select between pollution data for January and July
+summer = False   # used to select between pollution data for January and July
 
 poll_coll = "Aerosol.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
