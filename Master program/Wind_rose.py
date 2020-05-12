@@ -9,7 +9,7 @@ import array
 import windrose
 
 # Enter middle coordinate
-y_mid = 51.47  # lat
+y_mid = 41.5  # lat
 x_mid = -0.45 # lon
 # Location options
 # y 30.0 30.5 31.0 31.5 32.0 ... 68.0 68.5 69.0 69.5 70.0
