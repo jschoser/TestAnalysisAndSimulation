@@ -303,7 +303,6 @@ europe =    [   'Belarus',
                 'United Kingdom']
 
 # =============================================================================
-
 # Initialize arrays to store ratio and percentage
 val_arr = []
 perc_arr_named = []
@@ -311,15 +310,18 @@ perc_arr_val = []
 val = 0
 
 # =============================================================================
-
 # Select arrays to be used:
 
 sel_winter = winter_ratio
 sel_summer = summer_ratio
 
-# If you are calculating a summer to winter ratio, set to true, set whether you want percentages and set order:
+# If you are calculating a summer to winter ratio, set ratio to true:
 ratio = True
+
+# Set whether you want the outcomes in percentages:
 percent = True
+
+# Set division order:
 summer_divby_winter = True
 
 # If ratio set to false, set season:
@@ -339,7 +341,6 @@ dec = 4
 sd_m = 1
 
 # =============================================================================
-
 # Calculate ratios and percentages
 
 for i in range(len(sel_winter)):
@@ -409,6 +410,7 @@ if not percent:
     perc_arr_named = val_arr
 
 # =============================================================================
+# Print info about set:
 
 print('Europe only: ' + str(european_only))
 print()
@@ -418,6 +420,10 @@ print()
 # pp.pprint(perc_arr_named)
 
 # ==============================================================================
+# Splitting data into 3 arrays for more info
+# Lower array contains values below (sd_m) number of std. devs. (low fliers)
+# Upper array contains values above (sd_m) number of std. devs. (high fliers)
+
 split_low = []
 split_upp = []
 split_mid = []
@@ -447,22 +453,20 @@ for i in range(len(perc_arr_val)):
         named_upp.append(perc_arr_named[i])
 
 # ========================================================================================
-
 # Print outliers
+
 print(named_low)
 print(named_mid)
 print(named_upp)
 print()
 
 # =======================================================================================
-
-# Stat data
+# Calculate stat data for split arrays
 main_mean = np.mean(perc_arr_val)
 main_sd = stats.stdev(perc_arr_val)
 main_median = stats.median(perc_arr_val)
 
-
-
+# Print stat data nicely (some debugging included)
 print('TOT: MEAN = ' + str(round(main_mean, dec)) + ' SD = ' + str(round(main_sd, dec)))
 print()
 
@@ -480,12 +484,12 @@ if len(split_upp) > 2:
     upp_sd = stats.stdev(split_upp)
     print('UPP: MEAN = ' + str(round(upp_mean, dec)) + ' SD = ' + str(round(upp_sd, dec)))
 
+# Remind you that you set it to percentages
 if percent:
     print()
     print('(Unit: %)')
 
 # =================================================================================
-
 # Make boxplot
 
 fig, axs = plt.subplots()
