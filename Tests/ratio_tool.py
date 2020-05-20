@@ -308,7 +308,6 @@ europe =    [   'Belarus',
 val_arr = []
 perc_arr_named = []
 perc_arr_val = []
-tot = 0
 val = 0
 
 # =============================================================================
@@ -319,14 +318,14 @@ sel_winter = winter_ratio
 sel_summer = summer_ratio
 
 # If you are calculating a summer to winter ratio, set to true, set whether you want percentages and set order:
-ratio = False
+ratio = True
 percent = True
 summer_divby_winter = True
 
-# If not calculating a ratio, set season:
+# If ratio set to false, set season:
 win = False
 
-# Select only european countries or whole dataset:
+# Select european countries only or whole dataset:
 european_only = True
 SPECIFIC = ['Denmark', 'Faroes', 'Greece', 'United Kingdom']
 
@@ -335,6 +334,9 @@ adj = 1
 
 # Decimals:
 dec = 4
+
+# Number of standard deviations for outlier bounds
+sd_m = 1
 
 # =============================================================================
 
@@ -402,21 +404,18 @@ for i in range(len(sel_winter)):
                         perc_arr_named.append([sel_summer[i, 0], round(val * 100, dec)])
                         perc_arr_val.append(val * 100)
 
-    tot += val
-
 if not percent:
     perc_arr_val = val_arr[:, 1]
     perc_arr_named = val_arr
 
 # =============================================================================
 
-# Print ratio array in a nice way
-pp = PrettyPrinter(indent=4)
-# pp.pprint(perc_arr_named)
+print('Europe only: ' + str(european_only))
+print()
 
-# print('MEAN = ' + str(avg))
-# print('MEDIAN = ' + str(med))
-# print('SD = ' + str(stddev))
+# Print ratio array in a nice way
+# pp = PrettyPrinter(indent=4)
+# pp.pprint(perc_arr_named)
 
 # ==============================================================================
 split_low = []
@@ -429,7 +428,6 @@ named_upp = []
 
 data_mean = np.mean(perc_arr_val)
 data_sd = stats.stdev(perc_arr_val)
-sd_m = 1  # number of standard deviations for outlier bounds
 
 high_outliers = []
 low_outliers = []
@@ -454,6 +452,7 @@ for i in range(len(perc_arr_val)):
 print(named_low)
 print(named_mid)
 print(named_upp)
+print()
 
 # =======================================================================================
 
@@ -462,8 +461,10 @@ main_mean = np.mean(perc_arr_val)
 main_sd = stats.stdev(perc_arr_val)
 main_median = stats.median(perc_arr_val)
 
-print('TOTAL: MEAN = ' + str(round(main_mean, dec)) + ' SD = ' + str(round(main_sd, dec)) \
-      + ' MEDIAN = ' + str(round(main_median, dec)))
+
+
+print('TOT: MEAN = ' + str(round(main_mean, dec)) + ' SD = ' + str(round(main_sd, dec)))
+print()
 
 if len(split_low) > 2:
     low_mean = np.mean(split_low)
@@ -478,6 +479,10 @@ if len(split_upp) > 2:
     upp_mean = np.mean(split_upp)
     upp_sd = stats.stdev(split_upp)
     print('UPP: MEAN = ' + str(round(upp_mean, dec)) + ' SD = ' + str(round(upp_sd, dec)))
+
+if percent:
+    print()
+    print('(Unit: %)')
 
 # =================================================================================
 
