@@ -12,7 +12,6 @@ with_labels = True
 names = ["Fuelburn", "NO$_{x}$", "HC", "CO", "BC", "PM$_{2.5}$", "SO$_{4}$", "NIT", "NH$_{4}$", "POA",
          "BC", "O$_{3}$"]
 
-
 data = ct.find_matrix_data(ct.POLLUTION_COLLECTIONS, emission_levels, summer)
 df = pd.DataFrame.from_dict(data, orient='index', columns=names)
 
