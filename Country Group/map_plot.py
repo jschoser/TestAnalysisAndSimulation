@@ -33,7 +33,7 @@ shown in a map
 
 summer = False   # used to select between pollution data for January and July
 
-poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "SOOT.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
@@ -48,7 +48,7 @@ emission_levels = slice(0, 32)
 # they make it impossible to see any differences between the other countries
 outliers = []  # ["Iraq", "Israel", "Latvia"]
 
-mode = ct.RETURN_POLLUTION  # the statistic which is plotted (emissions, pollution or ratio between them)
+mode = ct.RETURN_RATIO  # the statistic which is plotted (emissions, pollution or ratio between them)
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
 do_spatial_analysis = False  # whether a second figure with spatial autocorrelation indicators should be displayed
