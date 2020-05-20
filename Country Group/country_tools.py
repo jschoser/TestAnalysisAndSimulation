@@ -156,6 +156,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
     # da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
 
     # RATIO
+    # da_poll = (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)) / getattr(DS_off, poll_chemical)
+
+    # ADJUSTED RATIO
     # da_poll = (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)) \
     #           / (getattr(DS_off, poll_chemical) - (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)))
 
