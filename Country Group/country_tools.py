@@ -28,7 +28,7 @@ METHOD_AVG = "Area weighted average"
 METHOD_POP = "Multiplied by population"
 METHOD_MEDIAN = "Median"
 
-POLLUTION_COLLECTIONS = ["Aerosol.24h", "O3.24h", "Soot.24h"]
+POLLUTION_COLLECTIONS = ["O3.24h", "Aerosol.24h", "Soot.24h"]
 
 lon_range = [-28.12 - 0.625/2, 48.12 + 0.625/2]
 lat_range = [31.5 - 0.5/2, 68.5 + 0.5/2]
@@ -396,6 +396,8 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
     ax.set_xlim([lon_range[0], lon_range[1]])
     ax.set_ylim([lat_range[0], lat_range[1]])
     # ax.set_axis_off()  # turns of coordinate axes
+    ax.xaxis.set_visible(False)
+    ax.yaxis.set_visible(False)
 
     # find maximum and minimum value to scale the colour coding
     min_val = min(processed_data.values()) if vmin is None else vmin
@@ -422,7 +424,9 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
         plot_grid()
 
     # create the colour legend
+    plt.rcParams.update({'font.size': 22})
     legend_ax = plt.axes([0.9, 0.1, 0.05, 0.75])
+    legend_ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0), useOffset=False)
     gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val).reshape(256, 1)[::-1]
     legend_ax.imshow(gradient, aspect='auto', cmap=plt.get_cmap(colormap), extent=[0, 1, min_val, max_val])
     legend_ax.xaxis.set_visible(False)
@@ -507,12 +511,14 @@ def find_matrix_data(poll_colls, emission_levels, summer,
         poll_on_filepaths.append(data_dir / data_filename(poll_coll, summer, True))
         poll_off_filepaths.append(data_dir / data_filename(poll_coll, summer, False))
 
+    print("Make sure that the 'names' array is in the same order as this")
     DS = xr.open_dataset(em_filepath)
     em_chemicals = DS.variables
     em_das = []
     for em_chemical in em_chemicals:
         # select only the specified emissions and convert to "per day"
         if em_chemical not in DS.coords:
+            print(em_chemical)
             em_das.append(getattr(DS, str(em_chemical)) * 24 * 3600)
 
     poll_das = []
@@ -522,6 +528,7 @@ def find_matrix_data(poll_colls, emission_levels, summer,
         poll_chemicals = DS_on.variables
         for poll_chemical in poll_chemicals:
             if poll_chemical not in DS_on.coords:
+                print(poll_chemical)
                 poll_das.append(getattr(DS_on, str(poll_chemical)) - getattr(DS_off, str(poll_chemical)))
 
     poll_em_data = {}
