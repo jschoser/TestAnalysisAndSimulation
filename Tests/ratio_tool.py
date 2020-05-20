@@ -302,6 +302,10 @@ europe =    [   'Belarus',
                 'Ukraine',
                 'United Kingdom']
 
+# TODO: Add more regions and the corresponding countries
+regions = {"Western Europe": ["France", "United Kingdom"], "Southeastern Europe": ["Greece", "Moldova"],
+           "Northern Europe": ["Finland", "Sweden", "Norway"]}
+
 # =============================================================================
 # Initialize arrays to store ratio and percentage
 val_arr = []
@@ -420,74 +424,82 @@ print()
 # pp.pprint(perc_arr_named)
 
 # ==============================================================================
-# Splitting data into 3 arrays for more info
-# Lower array contains values below (sd_m) number of std. devs. (low fliers)
-# Upper array contains values above (sd_m) number of std. devs. (high fliers)
 
-split_low = []
-split_upp = []
-split_mid = []
+print("perc_arr_named", perc_arr_named)
 
-named_low = []
-named_mid = []
-named_upp = []
+for region in regions:
 
-data_mean = np.mean(perc_arr_val)
-data_sd = stats.stdev(perc_arr_val)
+    # Splitting data into 3 arrays for more info
+    # Lower array contains values below (sd_m) number of std. devs. (low fliers)
+    # Upper array contains values above (sd_m) number of std. devs. (high fliers)
+    split_low = []
+    split_upp = []
+    split_mid = []
 
-high_outliers = []
-low_outliers = []
+    named_low = []
+    named_mid = []
+    named_upp = []
 
-print('Outlier bounds: ' + str(round(data_mean - sd_m * data_sd, dec)) + ', ' + str(round(data_mean + sd_m * data_sd, dec)))
+    print("Region:", region)
+    regional_perc_arr_named = [country for country in perc_arr_named if country[0] in regions[region]]
+    regional_perc_arr_val = [country[1] for country in regional_perc_arr_named]
+    print("regional_perc_arr_val", regional_perc_arr_val)
+    data_mean = np.mean(regional_perc_arr_val)
+    data_sd = stats.stdev(regional_perc_arr_val)
 
-for i in range(len(perc_arr_val)):
-    if perc_arr_val[i] < data_mean - sd_m * data_sd:
-        split_low.append(perc_arr_val[i])
-        named_low.append(perc_arr_named[i])
+    high_outliers = []
+    low_outliers = []
 
-    elif data_mean - sd_m * data_sd <= perc_arr_val[i] <= data_mean + sd_m * data_sd:
-        split_mid.append(perc_arr_val[i])
-        named_mid.append(perc_arr_named[i])
-    else:
-        split_upp.append(perc_arr_val[i])
-        named_upp.append(perc_arr_named[i])
+    print('Outlier bounds: ' + str(round(data_mean - sd_m * data_sd, dec)) + ', ' + str(round(data_mean + sd_m * data_sd, dec)))
 
-# ========================================================================================
-# Print outliers
+    for i in range(len(regional_perc_arr_val)):
+        if regional_perc_arr_val[i] < data_mean - sd_m * data_sd:
+            split_low.append(regional_perc_arr_val[i])
+            named_low.append(regional_perc_arr_named[i])
 
-print(named_low)
-print(named_mid)
-print(named_upp)
-print()
+        elif data_mean - sd_m * data_sd <= regional_perc_arr_val[i] <= data_mean + sd_m * data_sd:
+            split_mid.append(regional_perc_arr_val[i])
+            named_mid.append(regional_perc_arr_named[i])
+        else:
+            split_upp.append(regional_perc_arr_val[i])
+            named_upp.append(regional_perc_arr_named[i])
 
-# =======================================================================================
-# Calculate stat data for split arrays
-main_mean = np.mean(perc_arr_val)
-main_sd = stats.stdev(perc_arr_val)
-main_median = stats.median(perc_arr_val)
+    # ========================================================================================
+    # Print outliers
 
-# Print stat data nicely (some debugging included)
-print('TOT: MEAN = ' + str(round(main_mean, dec)) + ' SD = ' + str(round(main_sd, dec)))
-print()
-
-if len(split_low) > 2:
-    low_mean = np.mean(split_low)
-    low_sd = stats.stdev(split_low)
-    print('LOW: MEAN = ' + str(round(low_mean, dec)) + ' SD = ' + str(round(low_sd, dec)))
-
-mid_mean = np.mean(split_mid)
-mid_sd = stats.stdev(split_mid)
-print('MID: MEAN = ' + str(round(mid_mean, dec)) + ' SD = ' + str(round(mid_sd, dec)))
-
-if len(split_upp) > 2:
-    upp_mean = np.mean(split_upp)
-    upp_sd = stats.stdev(split_upp)
-    print('UPP: MEAN = ' + str(round(upp_mean, dec)) + ' SD = ' + str(round(upp_sd, dec)))
-
-# Remind you that you set it to percentages
-if percent:
+    print(named_low)
+    print(named_mid)
+    print(named_upp)
     print()
-    print('(Unit: %)')
+
+    # =======================================================================================
+    # Calculate stat data for split arrays
+    main_mean = np.mean(regional_perc_arr_val)
+    main_sd = stats.stdev(regional_perc_arr_val)
+    main_median = stats.median(regional_perc_arr_val)
+
+    # Print stat data nicely (some debugging included)
+    print('TOT: MEAN = ' + str(np.round(main_mean, dec)) + ' SD = ' + str(round(main_sd, dec)))
+    print()
+
+    if len(split_low) > 2:
+        low_mean = np.mean(split_low)
+        low_sd = stats.stdev(split_low)
+        print('LOW: MEAN = ' + str(np.round(low_mean, dec)) + ' SD = ' + str(round(low_sd, dec)))
+
+    mid_mean = np.mean(split_mid)
+    mid_sd = stats.stdev(split_mid)
+    print('MID: MEAN = ' + str(np.round(mid_mean, dec)) + ' SD = ' + str(round(mid_sd, dec)))
+
+    if len(split_upp) > 2:
+        upp_mean = np.mean(split_upp)
+        upp_sd = stats.stdev(split_upp)
+        print('UPP: MEAN = ' + str(np.round(upp_mean, dec)) + ' SD = ' + str(round(upp_sd, dec)))
+
+    # Remind you that you set it to percentages
+    if percent:
+        print()
+        print('(Unit: %)')
 
 # =================================================================================
 # Make boxplot
