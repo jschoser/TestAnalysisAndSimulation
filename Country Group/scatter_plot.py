@@ -51,7 +51,7 @@ poll_mult = 1
 
 # the altitude levels over which emissions will be considered (available from 1 to 32). Check Altitude_levels.txt for
 # conversion to km. Level 8: 1 km altitude, level 32: 13 km altitude
-emission_levels = slice(0, 8)
+emission_levels = slice(0, 32)
 
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 

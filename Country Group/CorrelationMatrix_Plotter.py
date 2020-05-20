@@ -9,8 +9,9 @@ emission_levels = slice(0, 32)
 save_with_scatterplots = False
 with_labels = True
 
-names = ["Fuelburn", "NO2", "HC", "CO", "BC", "PM25", "AerMassSO4", "AerMassNIT", "AerMassNH4", "AerMassPOA",
-         "AerMassBC", "O3"]
+names = ["Fuelburn", "NO$_{x}$", "HC", "CO", "BC", "PM$_{2.5}$", "SO$_{4}$", "NIT", "NH$_{4}$", "POA",
+         "BC", "O$_{3}$"]
+
 
 data = ct.find_matrix_data(ct.POLLUTION_COLLECTIONS, emission_levels, summer)
 df = pd.DataFrame.from_dict(data, orient='index', columns=names)
