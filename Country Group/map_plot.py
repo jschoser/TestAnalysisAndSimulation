@@ -33,11 +33,11 @@ shown in a map
 
 summer = False   # used to select between pollution data for January and July
 
-poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "Aerosol.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "AerMassBC"
+poll_chemical = "PM25"
 em_chemical = "BC"
 
 # the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
@@ -100,7 +100,7 @@ print("============= RESULTS ==============\n")
 
 print("These countries had no data available:", unavailable)
 print("Data:")
-pp.pprint(sorted(data.items(), key=lambda item: item[1]))
+pp.pprint(sorted(data.items(), key=lambda item: item[0]))
 
 if do_spatial_analysis:
     print("Global Moran's I: ", moran_global)
