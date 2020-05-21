@@ -6,12 +6,13 @@ from Altitude_converter import altitude_to_eta
 # ==================================== INPUT ============================================
 
 # Select the altitude [km]
-h = 11
+h = 0
+
 # Define variable alt for automatic naming system in the plt.savefig function
 alt = h
 
 # Enter the pollutant (Black Carbon ('BC') or Ozone ('Ozone'))
-pollutant = 'Ozone'
+pollutant = 'PM25'
 
 # =======================================================================================
 
@@ -19,13 +20,13 @@ pollutant = 'Ozone'
 h = altitude_to_eta(h)
 
 # Names of the dataset to be loaded if black carbon is selected
-if pollutant == 'BC':
+if pollutant == 'PM25':
 
     # Dataset name
-    name_DS = 'Soot'
+    name_DS = 'Aerosol'
 
     # Pollutant
-    name_poll = 'AerMassBC'
+    name_poll = 'PM25'
 
 # Names of the dataset to be loaded if Ozone is selected
 elif pollutant == 'Ozone':

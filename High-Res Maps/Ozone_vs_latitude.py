@@ -1,7 +1,8 @@
 import xarray as xr
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-
+from Country_reader import Europe_Coordinates
+import numpy as np
 # =================================================== Input ============================================================
 
 # Choose the season
@@ -18,6 +19,8 @@ Name_DF = (pollutant == 'BC') * 'Aerosol' + (pollutant == 'Ozone') * 'O3'
 # Get the name of the part of the dataset to be loaded
 Name_DS = (pollutant == 'BC') * 'PM25' + (pollutant == 'Ozone') * 'SpeciesConc_O3'
 
+
+
 # Get the season
 Season_DF = (season == 'Summer') * 'JUL' + (season == 'Winter') * 'JAN'
 
@@ -30,9 +33,13 @@ filepath_off    = 'Data/' + Name_DF + '.24h.' + Season_DF + '.OFF' + '.nc4'
 DF_av_on    = xr.open_dataset(filepath_on)
 DF_av_off   = xr.open_dataset(filepath_off)
 
-# Subtract datafiles to isolate aviation-attributable pollution
-DF_av_only = DF_av_on - DF_av_off
 
+# Subtract datafiles to isolate aviation-attributable pollution
+DF_av_only = (DF_av_on - DF_av_off)
+
+# ================================ Importing the grid cells of continental Europe ======================================
+
+europe = Europe_Coordinates()
 
 # ====================================== Selecting and averaging pollutants ============================================
 
@@ -40,54 +47,42 @@ DF_av_only = DF_av_on - DF_av_off
 DS = getattr(DF_av_only, Name_DS)
 
 # Averaging the pollutants over one month
-DS_avg = DS.mean(dim = 'time')
+DS_avg = DS.mean(dim = 'time')#.mean(dim = 'lon')
 
 # Select pollutant data at ground level
 DS_avg_grd = DS_avg.sel(lev = 1, method = 'nearest')
 
-# ============================================ Detecting outliers ======================================================
+europe = europe[europe[:, 1].argsort()]
 
-# Calculate the first and third quartile
-Q1      = DS_avg_grd.quantile(.25)
-Q3      = DS_avg_grd.quantile(.75)
 
-# Calculate the interquartile range
-IQR     = Q3 - Q1
+last_lat = 0
+lat_sum = 0
+distribution = []
+n = 1
+# Iterate through all points of continental Europe
+for i in europe:
+    # Reset sum and append values to a list at a new latitude
+    if i[1] != last_lat:
+        print(i[1])
+        last_lat = i[1]
+        distribution.append([last_lat, lat_sum/n])
+        lat_sum = 0
+        n = 0
 
-# Calculate limits for outliers
-# the bounds for vmax are greater than the standard 1.5 when BC is selected,
-# but otherwise all of central Europe was seen as an outlier
-vmin    = Q1 - (1.5*IQR)
-vmax    = Q3 + ((1.5 + 2*(pollutant == 'BC'))*IQR)
-#vmin = -0.12
-#vmax =  0.12
+    lat_sum += float(DS_avg_grd.sel(lat = i[1], method = 'nearest').sel(lon = i[0], method = 'nearest'))
+    n += 1
+
+
+
+
 # ============================================= Plotting Results =======================================================
+distribution = np.array(distribution)
 
-# select projection. Only seems to work with PlateCarree though
-proj = ccrs.PlateCarree()
+#DS_avg_grd.plot()
+plt.plot(distribution[1:,0], distribution[1:,1])
+plt.title("")
 
-# create axes
-ax = plt.axes(projection=proj)
+plt.xlabel("Latitude")
 
-# draw coastlines with given resolution
-ax.coastlines(resolution='50m')
-
-# Plot the result
-im = DS_avg_grd.plot.pcolormesh(ax=ax, cmap='coolwarm',
-                                vmax = vmax,
-                                vmin = vmin,
-                                add_colorbar = False)
-
-# Make a colorbar
-cb = plt.colorbar(im, orientation="vertical", shrink = 0.53)
-
-# Set axis size to avoid white edges
-plt.axis([-27, 47, 33, 67])
-
-# This line sets an empty title, because otherwise xarray automatically sets
-ax.set_title("")
-
-
-
-# Show the plot
+plt.ylabel("Ozone Average Dry Mixing Ratio")
 plt.show()
