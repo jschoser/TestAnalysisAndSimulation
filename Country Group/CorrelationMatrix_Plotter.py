@@ -6,7 +6,7 @@ import seaborn as sb
 
 summer = False
 emission_levels = slice(0, 32)
-save_with_scatterplots = True
+save_with_scatterplots = False
 with_labels = True
 
 names = ["Fuelburn", "NO$_{x}$", "HC", "CO", "BC ", "O$_{3}$", "PM$_{2.5}$", "SO$_{4}$", "NIT", "NH$_{4}$", "POA",
@@ -23,13 +23,17 @@ df_lt = corr_df.where(np.tril(np.ones(corr_df.shape)).astype(np.bool))
 df_lt = df_lt.drop(names[:5])
 df_lt = df_lt.drop(names[5:], axis=1)
 
-plt.rcParams.update({'font.size': 12})
+plt.rcParams.update({'font.size': 16})
+plt.tight_layout()
 hmap = sb.heatmap(df_lt, cmap="coolwarm", annot=True, cbar=True, vmin=-1, vmax=1)
-plt.xlabel("Emission species")
-plt.ylabel("Pollutant species")
+xlabel = plt.xlabel("Emission species")
+ylabel = plt.ylabel("Pollutant species")
 
-plt.title("Emission levels: " + str(emission_levels.start) + " to " + str(emission_levels.stop) +
-          " | " + ("July" if summer else "January") + " 2005")
+# quick fix, does not change with settings above. Saving it like this crops it automatically
+plt.savefig('CorrMatrix_January', bbox_extra_artists=(xlabel, ylabel), bbox_inches='tight')
+
+# plt.title("Emission levels: " + str(emission_levels.start) + " to " + str(emission_levels.stop) +
+#           " | " + ("July" if summer else "January") + " 2005")
 
 if save_with_scatterplots:
     plt.savefig("MatrixOutput/Correlation matrix")

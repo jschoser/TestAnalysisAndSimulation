@@ -31,13 +31,13 @@ shown in a map
 # AvEmMasses.nc4 can also be used instead of AvEmFluxes.nc4, but it does not contain any information about differences
 # in altitudes. It merely contains the sum of all emissions over a certain grid cell
 
-summer = False   # used to select between pollution data for January and July
+summer = True   # used to select between pollution data for January and July
 
-poll_coll = "Aerosol.24h"  # the collection name for pollution (first part of the .nc4 filename)
+poll_coll = "Soot.24h"  # the collection name for pollution (first part of the .nc4 filename)
 
 # the chemicals to be taken into account for pollution and emissions, respectively. These need to be the names of the
 # data sets inside the .nc4 files you selected
-poll_chemical = "PM25"
+poll_chemical = "AerMassBC"
 em_chemical = "BC"
 
 # the altitude levels over which emissions will be considered (available from 0 to 32). Check Altitude_levels.txt for
@@ -48,14 +48,14 @@ emission_levels = slice(0, 32)
 # they make it impossible to see any differences between the other countries
 outliers = []  # ["Iraq", "Israel", "Latvia"]
 
-mode = ct.RETURN_POLLUTION  # the statistic which is plotted (emissions, pollution or ratio between them)
+mode = ct.RETURN_RATIO  # the statistic which is plotted (emissions, pollution or ratio between them)
 method = ct.METHOD_AVG  # the way that the data is combined inside one country (median or area-weighted average)
 
 do_spatial_analysis = False  # whether a second figure with spatial autocorrelation indicators should be displayed
 
-colormap = "coolwarm"  # the color map used. Google "matplotlib color maps" to see the options
+colormap = "OrRd"  # the color map used. Google "matplotlib color maps" to see the options
 
-vmin, vmax = None, None  # extremes of the colour legend. If set to None, they are automatically chosen
+vmin, vmax = 49482.4, 4882447.5  # extremes of the colour legend. If set to None, they are automatically chosen
 
 mapping = ct.sqrt_mapping  # the mapping from values to the colour map. See country_tools for options
 
@@ -76,7 +76,7 @@ for country in unavailable:
 
 print("Plotting the data...")
 ct.plot_map(countries, data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
-            mapping=mapping, colormap=colormap, vmax=vmax, vmin=vmin)
+            mapping=mapping, colormap=colormap, vmax=vmax, vmin=vmin, show_title=False)
 
 moran_global, geary, moran_local = None, None, None
 
@@ -108,4 +108,8 @@ if do_spatial_analysis:
     print("Local Moran's I:")
     pp.pprint(moran_local)
 
+fig = plt.gcf()
+fig.set_size_inches(18.5, 10.5)
+plt.savefig('BCJul', bbox_inches='tight', dpi=200)
+print(min(data.values()), max(data.values()))
 plt.show()

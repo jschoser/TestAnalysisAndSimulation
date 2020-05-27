@@ -125,7 +125,7 @@ def find_country_name(country_polygons, lon, lat):
 # area-weighted average or by taking the median of all cells inside it
 # The output units are;
 #   - kg/m^2/day for emissions
-#   - mu_g/m^3 for pollution (except mol/(mol of dry air) for ozone)
+#   - mu_g/m^3 for pollution (except ppbv for ozone)
 #   - (mu_g/m^3) / (kg/m^2/day) for the ratio
 def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, emission_levels, summer,
                       em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data",
@@ -145,22 +145,7 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
 
     # subtract pollution data without aircraft from pollution with aircraft to retrieve the pollution caused by
     # aircraft only. Also, only select the appropriate chemical
-
-    # BASE POLLUTION
-    da_poll = getattr(DS_off, poll_chemical)
-
-    # ADJUSTED BASE POLLUTION (OFF MINUS DIFFERENCE)
-    # da_poll = getattr(DS_off, poll_chemical) - (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical))
-
-    # DIFFERENCE
-    # da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
-
-    # RATIO
-    # da_poll = (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)) / getattr(DS_off, poll_chemical)
-
-    # ADJUSTED RATIO
-    # da_poll = (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)) \
-    #           / (getattr(DS_off, poll_chemical) - (getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)))
+    da_poll = getattr(DS_on, poll_chemical) - getattr(DS_off, poll_chemical)
 
     DS_pop = xr.open_dataset(pop_filepath)
     da_pop = DS_pop.pop
@@ -207,6 +192,9 @@ def find_poll_em_data(country_polygons, poll_coll, em_chemical, poll_chemical, e
             # emission and pollution. For pollution, divide by the number of time steps to get the time average
             cell_em = np.sum(da_em.sel(lon=cell[0], lat=cell[1], lev=emission_levels).values)
             cell_poll = np.sum(da_poll.sel(lon=cell[0], lat=cell[1], lev=1, method='nearest').values) / poll_timesteps
+
+            if "O3" in poll_chemical:
+                cell_poll *= 10 ** 9
 
             if method == METHOD_POP:  # TODO: is this really the best way of using it? (think of mode == RETURN_RATIO)
                 cell_pop = da_pop.sel(lon=cell[0], lat=cell[1]).values
@@ -364,7 +352,7 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
         if mode == RETURN_RATIO or mode == RETURN_EMISSIONS else ""
     if mode != RETURN_BOTH:
         chemical_decription += "Units: " + ("$\mu g/m^3$" if poll_chemical != "SpeciesConc_O3" else
-                                             "mol/(mol of dry air)") if mode != RETURN_EMISSIONS else ""
+                                             "ppbv") if mode != RETURN_EMISSIONS else ""
         chemical_decription += " / (" if mode == RETURN_RATIO else ""
         chemical_decription += "$kg/m^2/day$" if mode != RETURN_POLLUTION else ""
         chemical_decription += (")" if mode == RETURN_RATIO else "") + " | "
@@ -376,11 +364,12 @@ def generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, meth
 # show map with colour coding for the pollution and/or emission data
 def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical, summer, emission_levels, method,
              add_title="", add_info="", show_removed=False, mapping=lin_mapping, colormap="coolwarm",
-             removed_color=(0, 0, 0, 1), show_cells=False, vmax=None, vmin=None):
+             removed_color=(0, 0, 0, 1), show_cells=False, vmax=None, vmin=None, show_title=True):
 
     # title for the entire plot
-    plt.suptitle(mode + add_title + "\n\n" +
-                 generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode))
+    if show_title:
+        plt.suptitle(mode + add_title + "\n\n" +
+                     generate_sub_title(poll_chemical, em_chemical, summer, emission_levels, method, mode))
 
     ax = plt.axes([0.05, 0.05, 0.8, 0.85])  # subplot for the map. [left, bottom, width, height]
 
@@ -395,7 +384,7 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
     # only display the region for which we have data
     ax.set_xlim([lon_range[0], lon_range[1]])
     ax.set_ylim([lat_range[0], lat_range[1]])
-    # ax.set_axis_off()  # turns of coordinate axes
+    plt.tight_layout()
     ax.xaxis.set_visible(False)
     ax.yaxis.set_visible(False)
 
@@ -424,7 +413,7 @@ def plot_map(country_polygons, processed_data, mode, poll_chemical, em_chemical,
         plot_grid()
 
     # create the colour legend
-    plt.rcParams.update({'font.size': 22})
+    plt.rcParams.update({'font.size': 26})
     legend_ax = plt.axes([0.9, 0.1, 0.05, 0.75])
     legend_ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0), useOffset=False)
     gradient = mapping(np.linspace(min_val, max_val, 256), min_val, max_val).reshape(256, 1)[::-1]
@@ -497,7 +486,7 @@ def plot_high_res_map(poll_coll, em_chemical, poll_chemical, emission_levels, su
 # area-weighted average or by taking the median of all cells inside it
 # The output units are;
 #   - kg/m^2/day for emissions
-#   - mu_g/m^3 for pollution (except mol/(mol of dry air) for ozone)
+#   - mu_g/m^3 for pollution (except ppbv for ozone)
 #   - (mu_g/m^3) / (kg/m^2/day) for the ratio
 def find_matrix_data(poll_colls, emission_levels, summer,
                     em_filename="AvEmFluxes.nc4", data_dir=pathlib.Path.cwd().parent / "Data",
