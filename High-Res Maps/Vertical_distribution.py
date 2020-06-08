@@ -12,8 +12,8 @@ from Altitude_converter import eta_to_altitude_arr
 from Country_reader import Europe_Coordinates, Country_Coordinates
 
 # File to be analysed
-filename    = "Data/Soot.24h.JAN.OFF.nc4"
-filename_on = "Data/Soot.24h.JAN.ON.nc4"
+filename    = "Data/Aerosol.24h.JUL.OFF.nc4"
+filename_on = "Data/Aerosol.24h.JUL.ON.nc4"
 
 # Extract dataset from file
 DS = xr.open_dataset(filename)
@@ -23,7 +23,7 @@ DS_ON = xr.open_dataset(filename_on)
 DS = DS_ON - DS
 
 # Select pollutant
-da = DS.AerMassBC #DS.SpeciesConc_O3*1e9
+da = DS.PM25#DS.SpeciesConc_O3*1e9#DS.AerMassBC
 
 # ========================================= Sample locations =================================================
 
@@ -51,7 +51,7 @@ Sea = np.array(list(set(map(tuple, coords)) - set(map(tuple, Europe))))
 Germany = Country_Coordinates('Germany')
 
 # Locations to sample vertical distributions
-sample_locations = [np.array([[8.5, 50]]),  # , 'Frankfurt Airport'],
+sample_locations = [np.array([[20, 40]]),  # , 'Frankfurt Airport'],
                     0,  # Ocean
                     0,  # Germany
                     0]
@@ -134,7 +134,10 @@ for i in range(len(sample_locations)):
     plt.plot(samples_averaged[:max_level, i], alt, label=location_names[i])
 
 plt.ylabel('Altitude [km]')
-plt.xlabel('Ozone mixing ratio [ppbv]')#'PM$_{2.5}$ concentration [$μg/m^3$]')
+plt.xlabel('PM$_{2.5}$ concentration [$μg/m^3$]')#'Ozone mixing ratio [ppbv]')
+
+plt.xlim(-.02,.12)
+plt.ylim(0,18)
 
 plt.legend()
 plt.grid()

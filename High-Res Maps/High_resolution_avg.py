@@ -13,10 +13,10 @@ pollutant = 'Ozone'
 # ============================================ Loading the datafile ====================================================
 
 # Datafile to be loaded
-Name_DF = (pollutant == 'BC') * 'Aerosol' + (pollutant == 'Ozone') * 'O3'
+Name_DF = (pollutant == 'PM25') * 'Aerosol' + (pollutant == 'Ozone') * 'O3'
 
 # Get the name of the part of the dataset to be loaded
-Name_DS = (pollutant == 'BC') * 'PM25' + (pollutant == 'Ozone') * 'SpeciesConc_O3'
+Name_DS = (pollutant == 'PM25') * 'PM25' + (pollutant == 'Ozone') * 'SpeciesConc_O3'
 
 # Get the season
 Season_DF = (season == 'Summer') * 'JUL' + (season == 'Winter') * 'JAN'
@@ -43,13 +43,13 @@ DS = getattr(DF_av_only, Name_DS)
 DS_avg = DS.mean(dim = 'time')
 
 # Select pollutant data at ground level
-DS_avg_grd = DS_avg.sel(lev = 1, method = 'nearest')
+DS_avg_grd = DS_avg.sel(lev = 1, method = 'nearest')*((pollutant == 'PM25') + ((pollutant == 'Ozone')*1e9))
 
 # ============================================ Detecting outliers ======================================================
 
 # Calculate the first and third quartile
-Q1      = DS_avg_grd.quantile(.25)
-Q3      = DS_avg_grd.quantile(.75)
+Q1      = DS_avg_grd.quantile(.02)
+Q3      = DS_avg_grd.quantile(.98)
 
 # Calculate the interquartile range
 IQR     = Q3 - Q1
@@ -57,8 +57,8 @@ IQR     = Q3 - Q1
 # Calculate limits for outliers
 # the bounds for vmax are greater than the standard 1.5 when BC is selected,
 # but otherwise all of central Europe was seen as an outlier
-vmin    = Q1 - (1.5*IQR)
-vmax    = Q3 + ((1.5 + 2*(pollutant == 'BC'))*IQR)
+vmin    = Q1 #- (1.5*IQR)
+vmax    = Q3 #+ ((1.5 + 2*(pollutant == 'PM25'))*IQR)
 #vmin = -0.12
 #vmax =  0.12
 # ============================================= Plotting Results =======================================================
