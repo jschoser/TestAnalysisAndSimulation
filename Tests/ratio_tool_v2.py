@@ -631,11 +631,11 @@ regions = {"Europe": ['Belarus',
 # =============================================================================
 # Select arrays to be used:
 
-sel_winter = ac_o3_jan
-sel_summer = ac_o3_july
+sel_winter = bg_o3_jan
+sel_summer = bg_o3_july
 
 # If you are calculating a summer to winter ratio, set ratio to true:
-ratio = True
+ratio = False
 
 # Set division order (ratio = True):
 summer_divby_winter = False
@@ -644,8 +644,10 @@ summer_divby_winter = False
 win = False
 
 # Decimals of output:
-dec = 4
+dec = 2
 
+# Set if you want contribution of aviation-attributable emission of total
+contribution = True
 # Number of standard deviations for outlier bounds
 # sd_m = 2
 
@@ -702,3 +704,22 @@ else:
         print(region + ": MEAN = " + str(round(mean, dec)) + " (SD = " + str(round(stdev, dec)) + ")")
     print()
     print("Winter: " + str(win))
+
+if contribution:
+    print()
+    print("Contribution of aviation-attributable pollutant vs background")
+    for region in regions:
+        val_arr = []
+        named_arr = []
+        for i in range(len(sel_summer)):
+            if sel_summer[i, 0] in regions[region]:
+                val = float(ac_pm25_jan[i, 1]) / float(bg_pm25_jan[i, 1])
+                named_arr.append([sel_summer[i, 0], val * 100])
+                val_arr.append(val * 100)
+        mean = np.mean(val_arr)
+        stdev = stats.stdev(val_arr)
+        print(region + ": MEAN = " + str(round(mean, dec)) + " (SD = " + str(round(stdev, dec)) + ")")
+    print()
+    print("Values in percent")
+
+
