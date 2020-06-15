@@ -55,12 +55,10 @@ Q3      = DS_avg_grd.quantile(.98)
 IQR     = Q3 - Q1
 
 # Calculate limits for outliers
-# the bounds for vmax are greater than the standard 1.5 when BC is selected,
-# but otherwise all of central Europe was seen as an outlier
-vmin    = Q1 #- (1.5*IQR)
-vmax    = Q3 #+ ((1.5 + 2*(pollutant == 'PM25'))*IQR)
-#vmin = -0.12
-#vmax =  0.12
+# Adjust until the plot looks good
+vmin    = Q1
+vmax    = Q3
+
 # ============================================= Plotting Results =======================================================
 
 # select projection. Only seems to work with PlateCarree though
@@ -86,8 +84,6 @@ plt.axis([-27, 47, 33, 67])
 
 # This line sets an empty title, because otherwise xarray automatically sets
 ax.set_title("")
-
-
 
 # Show the plot
 plt.show()

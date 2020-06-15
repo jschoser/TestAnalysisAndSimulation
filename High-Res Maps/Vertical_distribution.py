@@ -12,8 +12,8 @@ from Altitude_converter import eta_to_altitude_arr
 from Country_reader import Europe_Coordinates, Country_Coordinates
 
 # File to be analysed
-filename    = "Data/Aerosol.24h.JUL.OFF.nc4"
-filename_on = "Data/Aerosol.24h.JUL.ON.nc4"
+filename    = "Data/Aerosol.24h.JAN.OFF.nc4"
+filename_on = "Data/Aerosol.24h.JAN.ON.nc4"
 
 # Extract dataset from file
 DS = xr.open_dataset(filename)
@@ -23,7 +23,7 @@ DS_ON = xr.open_dataset(filename_on)
 DS = DS_ON - DS
 
 # Select pollutant
-da = DS.PM25#DS.SpeciesConc_O3*1e9#DS.AerMassBC
+da = DS.PM25
 
 # ========================================= Sample locations =================================================
 
@@ -44,31 +44,24 @@ coords = np.array(coords)
 # Coordinates of land only
 Europe = Europe_Coordinates()
 
-# Remove the duplicate elements from coords and Europe, to select the sea only
-Sea = np.array(list(set(map(tuple, coords)) - set(map(tuple, Europe))))
-
 # Get the grid points in germany
 Germany = Country_Coordinates('Germany')
 
 # Locations to sample vertical distributions
-sample_locations = [np.array([[20, 40]]),  # , 'Frankfurt Airport'],
-                    0,  # Ocean
+sample_locations = [np.array([[8.5, 50]]),  # , 'Frankfurt Airport'],
                     0,  # Germany
                     0]
 
 location_names = ["Frankfurt Airport",
-                  "Ocean",
                   "Germany",
                   "Continental Europe"]
 
-# Add the datapoints in the sea to the sample locations
-sample_locations[1] = Sea
 
 # Add the datapoints in germany
-sample_locations[2] = Germany
+sample_locations[1] = Germany
 
 # Add the datapoints of continental Europe
-sample_locations[3] = Europe
+sample_locations[2] = Europe
 
 # Maximum altitude level to make the plots for
 max_level = 38
@@ -129,15 +122,20 @@ samples_averaged = average_distributions(avg_dat, sample_locations)
 # Convert the eta pressure levels to km, used as y axis in the plot
 alt = eta_to_altitude_arr(da.lev.values)[:max_level]
 
+# Changing the font size
+plt.rcParams.update({'font.size': 14})
+
 # Plotting the different locations
 for i in range(len(sample_locations)):
     plt.plot(samples_averaged[:max_level, i], alt, label=location_names[i])
 
-plt.ylabel('Altitude [km]')
+plt.ylabel('Altitude [$km$]')
 plt.xlabel('PM$_{2.5}$ concentration [$μg/m^3$]')#'Ozone mixing ratio [ppbv]')
 
 plt.xlim(-.02,.12)
 plt.ylim(0,18)
+
+plt.tight_layout()
 
 plt.legend()
 plt.grid()

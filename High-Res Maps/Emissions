@@ -3,35 +3,40 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+# Input (Ground or Cruise)
+level = 'Cruise'
+
 filename = "Data/AvEmFluxes.nc4"
 
-DS = xr.open_dataset(filename)  # extract data set from netCFD file
-da = DS.FUELBURN  # retrieve data array containing 24h average PM25 concentrations (21 days, 72 levels)
+# extract data set from netCFD file
+DS = xr.open_dataset(filename)
 
-ground = da.sel(lev = np.arange(1,8,1), method = 'nearest').sum(dim = 'lev')
-cruise = da.sel(lev = np.arange(28,32,1), method = 'nearest').sum(dim = 'lev')
+# retrieve data array
+da = DS.FUELBURN
 
-tot_grd = float(ground.sum())
+# Taking a slice of the data from ~9 to 12 km altitude (level 28 to 32)
+cruise = da.sel(lev=np.arange(28, 32, 1), method='nearest').sum(dim='lev')
+
+# Summing all the emission fluxes of cruise level
 tot_crs = float(cruise.sum())
+
+# Selecting everything up to ~1 km
+ground = da.sel(lev = np.arange(1,8,1), method = 'nearest').sum(dim = 'lev')
+
+# Total emissions on the ground
+tot_grd = float(ground.sum())
+
+# Summing all the fluxes
 tot     = float(da.sum())
-print(round(100*tot_crs/tot, 2), round(100*tot_grd/tot, 2))
 
-"""
-proj = ccrs.PlateCarree()  # select projection. Only seems to work with PlateCarree though
+# Printing the relative contributions of cruise and ground level emissions
+print('Relative contributions to total emissions')
+print('Cruise' + '  | ' + 'Ground')
+print(round(100*tot_crs/tot, 2), '  |  ', round(100*tot_grd/tot, 2))
+print()
 
-ax = plt.axes([0.1, 0.55, 0.8, 0.4], projection=proj)  # create axes
-ax.coastlines(resolution='50m')  # draw coastlines with given resolution
-
-# plot data
-ax.pcolormesh(da.lon, da.lat, cruise, transform=proj)
-cruise.plot()
-
-
-#ax.pcolormesh(da.lon, da.lat, ground, transform=proj)
-#ground.plot()
-plt.show()
-"""
-# select projection. Only seems to work with PlateCarree though
+# Select projection.
 proj = ccrs.PlateCarree()
 
 # create axes
@@ -40,11 +45,31 @@ ax = plt.axes(projection=proj)
 # draw coastlines with given resolution
 ax.coastlines(resolution='50m')
 
-# Plot the result
-im = cruise.plot.pcolormesh(ax=ax, cmap='YlOrBr',
-                            vmax = 2e-10,
-                            vmin = 0,
-                            add_colorbar = False)
+
+if level == 'Cruise':
+
+    # Confirm selection
+    print("Plotting Cruise level emissions (9 km < h < 12 km)")
+
+    # Plot the result
+    im = cruise.plot.pcolormesh(ax=ax, cmap='YlOrBr',
+                                vmax = 2e-10,
+                                vmin = 0,
+                                add_colorbar = False)
+
+elif level == 'Ground':
+
+    # Confirm selection
+    print("Plotting Ground level emissions (h < 1 km)")
+
+    # Plot the result
+    im = ground.plot.pcolormesh(ax=ax, cmap='YlOrBr',
+                                vmax=2e-10,
+                                vmin=0,
+                                add_colorbar=False)
+else:
+    print('Selection not valid')
+
 
 # Make a colorbar
 cb = plt.colorbar(im, orientation="vertical", shrink = 0.53)

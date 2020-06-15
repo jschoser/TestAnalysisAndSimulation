@@ -6,28 +6,17 @@ import numpy as np
 # =================================================== Input ============================================================
 
 # Choose the season
-season = 'Winter'
-
-# Choose the pollutant
-pollutant = 'Ozone'
+season = 'Summer'
 
 # ============================================ Loading the datafile ====================================================
-
-# Datafile to be loaded
-Name_DF = (pollutant == 'BC') * 'Aerosol' + (pollutant == 'Ozone') * 'O3'
-
-# Get the name of the part of the dataset to be loaded
-Name_DS = (pollutant == 'BC') * 'PM25' + (pollutant == 'Ozone') * 'SpeciesConc_O3'
-
-
 
 # Get the season
 Season_DF = (season == 'Summer') * 'JUL' + (season == 'Winter') * 'JAN'
 
 
 # Create the file paths based on the pollutants selected
-filepath_on     = 'Data/' + Name_DF + '.24h.' + Season_DF + '.ON' + '.nc4'
-filepath_off    = 'Data/' + Name_DF + '.24h.' + Season_DF + '.OFF' + '.nc4'
+filepath_on     = 'Data/O3.24h.' + Season_DF + '.ON.nc4'
+filepath_off    = 'Data/O3.24h.' + Season_DF + '.OFF.nc4'
 
 # Open datafiles with aviation on and off
 DF_av_on    = xr.open_dataset(filepath_on)
@@ -44,10 +33,10 @@ europe = Europe_Coordinates()
 # ====================================== Selecting and averaging pollutants ============================================
 
 # Selecting the dataset containing the desired pollutant
-DS = getattr(DF_av_only, Name_DS)
+DS = DF_av_only.SpeciesConc_O3
 
 # Averaging the pollutants over one month
-DS_avg = DS.mean(dim = 'time')#.mean(dim = 'lon')
+DS_avg = DS.mean(dim = 'time')
 
 # Select pollutant data at ground level
 DS_avg_grd = DS_avg.sel(lev = 1, method = 'nearest')
@@ -73,16 +62,18 @@ for i in europe:
     n += 1
 
 
-
-
 # ============================================= Plotting Results =======================================================
+
 distribution = np.array(distribution)
 
-#DS_avg_grd.plot()
-plt.plot(distribution[1:,0], distribution[1:,1])
+# Changing the font size
+plt.rcParams.update({'font.size': 14})
+plt.plot(distribution[1:, 0], distribution[1:, 1])
 plt.title("")
 
 plt.xlabel("Latitude")
 
 plt.ylabel("Ozone Average Dry Mixing Ratio")
+
+plt.grid()
 plt.show()
